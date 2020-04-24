@@ -160,14 +160,14 @@ public class DefaultRegistrationEngine implements RegistrationEngine {
             } else {
                 // Try to register to dm servers.
                 // TODO we currently support only one dm server.
-                Server dmServer = dmServers.iterator().next();
+                Server dmServer = dmServers.iterator().next();//this dmServer only contains pskIdentity and server id
                 registerFuture = schedExecutor.submit(new RegistrationTask(dmServer));
             }
         }
     }
 
     public Collection<Server> factoryBootstrap() {
-        ServersInfo serversInfo = ServersInfoExtractor.getInfo(objectEnablers);
+        ServersInfo serversInfo = ServersInfoExtractor.getInfo(objectEnablers);//here we extract server info
         if (!serversInfo.deviceManagements.isEmpty()) {
             Collection<Server> servers = endpointsManager.createEndpoints(serversInfo.deviceManagements.values());
             return servers;
@@ -265,7 +265,7 @@ public class DefaultRegistrationEngine implements RegistrationEngine {
 
     private Status register(Server server) throws InterruptedException {
         DmServerInfo dmInfo = ServersInfoExtractor.getDMServerInfo(objectEnablers, server.getId());
-
+        //dmInfo contains client's info
         if (dmInfo == null) {
             LOG.info("Trying to register device but there is no LWM2M server config.");
             return Status.FAILURE;
@@ -280,8 +280,12 @@ public class DefaultRegistrationEngine implements RegistrationEngine {
             if (observer != null) {
                 observer.onRegistrationStarted(server, request);
             }
-            RegisterResponse response = sender.send(dmInfo.getAddress(), dmInfo.isSecure(), request,
-                    requestTimeoutInMs);
+            RegisterResponse response = null;
+            //TODO: write blockchain chekcing here!!!!!
+//            if (dmInfo.pskId.equals("testing")) {
+                response = sender.send(dmInfo.getAddress(), dmInfo.isSecure(), request,
+                        requestTimeoutInMs);
+//            }
 
             if (response == null) {
                 LOG.info("Registration failed: Timeout.");
@@ -291,9 +295,11 @@ public class DefaultRegistrationEngine implements RegistrationEngine {
                 return Status.TIMEOUT;
             } else if (response.isSuccess()) {
                 // Add server to registered one
+                //TODO: registration ID should be block address, not response reigistration ID anymore!
                 String registrationID = response.getRegistrationID();
+//                String registrationID = "lalalalla";
                 registeredServers.put(registrationID, server);
-                LOG.info("Registered with location '{}'.", registrationID);
+                LOG.info("Registered with location '{}'.", registrationID); //here registration succeed
 
                 // Update every lifetime period
                 long delay = calculateNextUpdate(server, dmInfo.lifetime);
@@ -403,6 +409,8 @@ public class DefaultRegistrationEngine implements RegistrationEngine {
         LOG.info("Trying to update registration to {} (response timeout {}ms)...", server.getUri(), requestTimeoutInMs);
         UpdateRequest request = null;
         try {
+            //TODO: here we should use blockchain to validate registrationID (act as authroization)
+            System.out.println(registrationID);
             request = new UpdateRequest(registrationID, registrationUpdate.getLifeTimeInSec(),
                     registrationUpdate.getSmsNumber(), registrationUpdate.getBindingMode(),
                     registrationUpdate.getObjectLinks(), registrationUpdate.getAdditionalAttributes());

@@ -124,6 +124,7 @@ angular.module('resourceDirectives', [])
                     // manage request information
                     helper.handleResponse(data, scope.resource.read, function (formattedDate){
                         if (data.success && data.content) {
+                            console.log("here")
                             if("value" in data.content) {
                                 // single value
                                 scope.resource.value = data.content.value;

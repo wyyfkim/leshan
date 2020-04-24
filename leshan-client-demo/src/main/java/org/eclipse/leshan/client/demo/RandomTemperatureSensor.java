@@ -50,13 +50,17 @@ public class RandomTemperatureSensor extends BaseInstanceEnabler {
     @Override
     public synchronized ReadResponse read(ServerIdentity identity, int resourceId) {
         LOG.info("Read on Temperature resource /{}/{}/{}", getModel().id, getId(), resourceId);
+        LOG.info("Here finally");
         switch (resourceId) {
         case MIN_MEASURED_VALUE:
             return ReadResponse.success(resourceId, getTwoDigitValue(minMeasuredValue));
         case MAX_MEASURED_VALUE:
             return ReadResponse.success(resourceId, getTwoDigitValue(maxMeasuredValue));
         case SENSOR_VALUE:
-            return ReadResponse.success(resourceId, getTwoDigitValue(currentTemp));
+            //add blockchin data alert
+            ReadResponse test = ReadResponse.success(resourceId, getTwoDigitValue(currentTemp));
+            System.out.println(test.getContent());
+            return test;
         case UNITS:
             return ReadResponse.success(resourceId, UNIT_CELSIUS);
         default:

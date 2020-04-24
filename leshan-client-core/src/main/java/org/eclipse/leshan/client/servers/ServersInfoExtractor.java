@@ -64,7 +64,7 @@ public class ServersInfoExtractor {
             return null;
 
         ServersInfo infos = new ServersInfo();
-        LwM2mObject securities = (LwM2mObject) securityEnabler.read(SYSTEM, new ReadRequest(SECURITY)).getContent();
+        LwM2mObject securities = (LwM2mObject) securityEnabler.read(SYSTEM, new ReadRequest(SECURITY)).getContent();        //here the securities object contains credentials
         LwM2mObject servers = (LwM2mObject) serverEnabler.read(SYSTEM, new ReadRequest(SERVER)).getContent();
 
         for (LwM2mObjectInstance security : securities.getInstances().values()) {
@@ -101,7 +101,7 @@ public class ServersInfoExtractor {
                     DmServerInfo info = new DmServerInfo();
                     info.serverUri = new URI((String) security.getResource(SEC_SERVER_URI).getValue());
                     info.serverId = (long) security.getResource(SEC_SERVER_ID).getValue();
-                    info.secureMode = getSecurityMode(security);
+                    info.secureMode = getSecurityMode(security);//here extract mode and credentials
                     if (info.secureMode == SecurityMode.PSK) {
                         info.pskId = getPskIdentity(security);
                         info.pskKey = getPskKey(security);
