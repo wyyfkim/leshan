@@ -14,13 +14,13 @@ contract PassageModel {
         // TODO: actor certification? ISO:9001?
     }
 
-    struct Certification {
-        bytes32 certificationId;
-        string name;
-        string imageUrl;
-        // TODO: certification expiration date
-        //bytes32 certificationActorId; // agency/company behind the certification
-    }
+//    struct Certification {
+//        bytes32 certificationId;
+//        string name;
+//        string imageUrl;
+//        // TODO: certification expiration date
+//        //bytes32 certificationActorId; // agency/company behind the certification
+//    }
 
     struct ProductVersion {
         bytes32 versionId;
@@ -30,6 +30,7 @@ contract PassageModel {
         string latitude;
         string longitude;
         string customJsonData;
+        string deviceClientName;
     }
     
     struct Product {
@@ -39,10 +40,12 @@ contract PassageModel {
         bytes32 productId;
         bytes32 latestVersionId;
         bytes32[] versions;
-        bytes32[] certificationsIds;
+//        bytes32[] certificationsIds;
         
         address owner;
-        address nextAuthorizedOwnerAddress;
+//        address nextAuthorizedOwnerAddress;
+
+        string deviceClientName;
 
         // TODO: standard product categories/descriptions
         // TODO: allow users to set favourite categories based on their industry
@@ -50,7 +53,8 @@ contract PassageModel {
 
         string name;
         string description;
-        string alerts;
+        string temperatureAlerts;
+        string locationAlerts;
     }
     
     /***********************
@@ -58,6 +62,8 @@ contract PassageModel {
     ***********************/
     mapping (bytes32 => Product) public productIdToProductStruct; // access a product struct directly from an ID
     bytes32[] public productIds; // access all product IDs
+
+    mapping (string => Product) deviceClientNameToProductStruct; // access a product struct directly from a device client name
 
     mapping (bytes32 => ProductVersion) public versionIdToVersionStruct; // access a version struct from a version ID
     bytes32[] public productVersionIds; // access all version IDs
@@ -67,18 +73,18 @@ contract PassageModel {
     mapping (address => Actor) public actorAddressToActorStruct; // access an actor struct from its Eth address
     address[] public actorAddresses; // access all actor addresses
 
-    mapping (bytes32 => Certification) public certificationIdToCertificationStruct; // access a version struct from a version ID
-    bytes32[] public certificationIds; // access all version IDs
+//    mapping (bytes32 => Certification) public certificationIdToCertificationStruct; // access a version struct from a version ID
+//    bytes32[] public certificationIds; // access all version IDs
+//
+//    mapping (bytes32 => bytes32[]) public nodeToParents; // access a combined product's parents
+//
+//    mapping (bytes32 => bytes32[]) public nodeToChildren; // access a divided product's children
 
-    mapping (bytes32 => bytes32[]) public nodeToParents; // access a combined product's parents
-
-    mapping (bytes32 => bytes32[]) public nodeToChildren; // access a divided product's children
-
-    // TODO: list of god accounts (mapping? array?)
-    address public godUser;
-    address[] public certifingUsers;
-
-    // TODO: handle certifying actors' addresses
-    // (see https://etherscan.io/address/0x06012c8cf97bead5deae237070f9587f8e7a266d#code)
-    mapping (address => bytes32[]) certifiersAddressToCertificationIds; // Certifing Actors to their certifications IDs
+//    // TODO: list of god accounts (mapping? array?)
+//    address public godUser;
+//    address[] public certifingUsers;
+//
+//    // TODO: handle certifying actors' addresses
+//    // (see https://etherscan.io/address/0x06012c8cf97bead5deae237070f9587f8e7a266d#code)
+//    mapping (address => bytes32[]) certifiersAddressToCertificationIds; // Certifing Actors to their certifications IDs
 }

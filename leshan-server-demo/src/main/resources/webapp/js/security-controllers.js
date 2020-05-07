@@ -21,7 +21,45 @@ angular.module('securityControllers', [])
     '$http',
     'dialog',
     function SecurityCtrl($scope, $http, dialog) {
-
+        // let instance;
+        // let account;
+        // let getWeb3 = new Promise(function (resolve, reject) {
+        //     window.addEventListener('load', function () {
+        //         let results;
+        //         let web3 = window.web3;
+        //         if (typeof web3 !== 'undefined') {
+        //             web3 = new Web3(web3.currentProvider);
+        //             results = {
+        //                 web3: web3
+        //             };
+        //             resolve(results)
+        //         } else {
+        //             let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
+        //             web3 = new Web3(provider);
+        //             results = {
+        //                 web3: web3
+        //             };
+        //             reject(results);
+        //         }
+        //     })
+        // })
+        // let DeviceManager = new Promise(function (resolve, reject) {
+        //     getWeb3.then(results => {
+        //         web3 = results.web3;
+        //         account = web3.eth.defaultAccount
+        //         console.log("account")
+        //         console.log(account)
+        //         var abiStr = '[{"constant": false,"inputs": [{"internalType": "bytes32","name": "_identifier","type": "bytes32"},{"internalType": "string","name": "_metadataHash","type": "string"},{"internalType": "string","name": "_firmwareHash","type": "string"},{"internalType": "bytes32","name": "_productID","type": "bytes32"}],"name": "createDevice","outputs": [{"internalType": "uint256","name": "deviceID","type": "uint256"}],"payable": false,"stateMutability": "nonpayable","type": "function"}]';
+        //         var abiJSON = JSON.parse(abiStr);
+        //         var constractAddress = "0xfcf863df98849cfa04b080c35d09a83d312a1f0c";
+        //         var deviceContract = web3.eth.contract(abiJSON);
+        //         var deviceManager = deviceContract.at(constractAddress)
+        //         instance = deviceManager;
+        //         return deviceManager;
+        //     }).catch(error => {
+        //         reject(error);
+        //     });
+        // });
         function toHex(byteArray){
             var hex = [];
             for (var i in byteArray){
@@ -94,9 +132,28 @@ angular.module('securityControllers', [])
 
         $scope.save = function() {
             $scope.$broadcast('show-errors-check-validity');
+            let getWeb3 = new Web3(window.web3.currentProvider);
+            let account = getWeb3.eth.defaultAccount;
+            let DeviceABIstr = '[{"constant": false,"inputs": [{"internalType": "bytes32","name": "_identifier","type": "bytes32"},{"internalType": "string","name": "_metadataHash","type": "string"},{"internalType": "string","name": "_firmwareHash","type": "string"},{"internalType": "string","name": "_endpointClientName","type": "string"}],"name": "createDevice","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"payable": false,"stateMutability": "nonpayable","type": "function"}]';
+            let DeviceABIJSON = JSON.parse(DeviceABIstr);
+            let DeviceConstractAddress = "0x8636Ea23454A8e2Ca9da12a5446FeC8A2D834953";
+            let DeviceContract = web3.eth.contract(DeviceABIJSON);
+            let DeviceManager = DeviceContract.at(DeviceConstractAddress)
             if ($scope.form.$valid) {
                 if($scope.securityMode == "psk") {
                     var security = {endpoint: $scope.endpoint, psk : { identity : $scope.pskIdentity , key : $scope.pskValue}};
+                    console.log("sghaldkjfgh!!!!")
+                    console.log(DeviceManager)
+                    console.log(String($scope.pskIdentity).valueOf())
+                    console.log(String($scope.pskValue).valueOf())
+                    console.log(String($scope.endpoint).valueOf())
+
+                    DeviceManager.createDevice("0x1234", String($scope.pskIdentity).valueOf(), String($scope.pskValue).valueOf(), String($scope.endpoint).valueOf(), { from: account}, (error, txHash) => {
+                        console.log(error)
+                        console.log(txHash)
+                    });
+                    // console.log("sghaldkjfgh!!!2")
+
                 } else if($scope.securityMode == "rpk") {
                     var security = {endpoint: $scope.endpoint, rpk : { x : $scope.rpkXValue , y : $scope.rpkYValue, params : $scope.rpkParamsValue || $scope.defaultParams}};
                 } else {
