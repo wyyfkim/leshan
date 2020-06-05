@@ -1,4 +1,6 @@
-pragma solidity ^0.4.24;
+//pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
+
 
 
 contract PassageModel {
@@ -13,6 +15,7 @@ contract PassageModel {
         string physicalAddress; // Physical address, may be separated (more costly)
         // TODO: actor certification? ISO:9001?
     }
+
 
 //    struct Certification {
 //        bytes32 certificationId;
@@ -45,7 +48,7 @@ contract PassageModel {
         address owner;
 //        address nextAuthorizedOwnerAddress;
 
-        string deviceClientName;
+//        string deviceClientName;
 
         // TODO: standard product categories/descriptions
         // TODO: allow users to set favourite categories based on their industry

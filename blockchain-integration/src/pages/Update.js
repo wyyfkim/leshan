@@ -30,7 +30,8 @@ class Update extends Component {
       longitude: '',
       address: '',
       updateButtonDisabled: false,
-      customDataInputs: {}
+      customDataInputs: {},
+      deviceClientName:{}
     }
     this.onChange = (address) => this.setState({ address })
   }
@@ -38,18 +39,43 @@ class Update extends Component {
   componentDidMount() {
     // shorthand to get the route parameters
     this.params = this.props.match.params;
-
     // fetch the product's custom data fields then add them to the state
     this.props.passageInstance.getProductCustomDataById(String(this.params.productId).valueOf(), this.params.versionId ? String(this.params.versionId).valueOf() : "latest")
       .then((result) => {
+
+        console.log(result)
         const customData = JSON.parse(result);
+
+        // const customData = JSON.parse(result);
+        console.log(customData)
         Object.keys(customData).map(dataKey => {
+          console.log(dataKey)
           const inputKey = this.appendInput();
+          console.log("working..")
           this.setState({
             customDataInputs: {...this.state.customDataInputs, [inputKey]: {key: dataKey, value: customData[dataKey]}}
           })
+          console.log("still working")
+
           return false;
-        })
+        }
+        )
+      }).then(() => {
+      this.props.passageInstance.getProductByIdExtra(String(this.params.productId).valueOf(), this.params.versionId ? String(this.params.versionId).valueOf() : "latest")
+          .then((extraData) => {
+            console.log("still working")
+
+            const deviceName = extraData[0].split(";");
+            Object.keys(deviceName).map(dataKey => {
+              const inputKey = this.appendDevice();
+              this.setState({
+                deviceClientName: {...this.state.deviceClientName, [inputKey]: {key: dataKey, value: deviceName[dataKey]}}
+              })
+              return false;
+            })
+            // console.log(this.state.deviceClientName)
+
+          })
       })
       .catch((error) => {
         // if something goes wrong when fetching the product, we just redirect
@@ -63,6 +89,13 @@ class Update extends Component {
   appendInput() {
     var newInputKey = `input-${Object.keys(this.state.customDataInputs).length}`; // this might not be a good idea (e.g. when removing then adding more inputs)
     this.setState({ customDataInputs: {...this.state.customDataInputs, [newInputKey]: {key: "", value: ""} }});
+    return newInputKey;
+  }
+
+  //to be completed
+  appendDevice() {
+    var newInputKey = Object.keys(this.state.deviceClientName).length; // this might not be a good idea (e.g. when removing then adding more inputs)
+    this.setState({ deviceClientName: {...this.state.deviceClientName, [newInputKey]: {key: "", value: ""} }});
     return newInputKey;
   }
 
@@ -91,17 +124,22 @@ class Update extends Component {
       return false;
     })
 
+    var deviceObject = []
+    Object.keys(this.state.deviceClientName).map(inputKey => {
+      const input = this.state.deviceClientName[inputKey]
+      if(input.value.trim() !== ""){
+        deviceObject.push(input.value);
+      }
+      return false;
+    })
+    console.log(deviceObject)
     // actually call the smart contract method
-    this.props.passageInstance.updateProduct(String(this.params.productId).valueOf(), this.state.latitude.toString(), this.state.longitude.toString(), JSON.stringify(customDataObject), {from: this.props.web3Accounts[0], gas:1000000})
+    this.props.passageInstance.updateProduct(String(this.params.productId).valueOf(), this.state.latitude.toString(), this.state.longitude.toString(), JSON.stringify(customDataObject), deviceObject.join(";"), {from: this.props.web3Accounts[0], gas:1000000})
       .then((result) => {
-        console.log(typeof(String(this.params.productId).valueOf()))
-        console.log(String(this.params.productId).valueOf())
         // redirect to the product page upon success
         this.props.history.push('/products/' + this.params.productId);
       })
-      //   .then((result) => {
-      //   this.props.passageInstance.addProductAlert(String(this.params.productId).valueOf(), "Success!", {from: this.props.web3Accounts[0], gas:1000000})
-      // })
+
   }
 
   render() {
@@ -122,14 +160,14 @@ class Update extends Component {
           }
           panelContent={
             <div>
-              <FormGroup>
-                  <Label>Current location</Label>
-                  <PlacesAutocomplete
-                    inputProps={inputProps}
-                    onSelect={this.handleSelect}
-                    classNames={{input: "form-control"}}
-                  />
-              </FormGroup>
+              {/*<FormGroup>*/}
+              {/*    <Label>Current location</Label>*/}
+              {/*    <PlacesAutocomplete*/}
+              {/*      inputProps={inputProps}*/}
+              {/*      onSelect={this.handleSelect}*/}
+              {/*      classNames={{input: "form-control"}}*/}
+              {/*    />*/}
+              {/*</FormGroup>*/}
               <FormGroup>
                 {
                   // for every custom data field specified in the component state,
@@ -149,6 +187,52 @@ class Update extends Component {
             </div>
           }
         />
+        {/*<AnnotatedSection*/}
+        {/*    annotationContent={*/}
+        {/*      <div>*/}
+        {/*        <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faArrowAltCircleUp}/>*/}
+        {/*        Connect new device*/}
+        {/*      </div>*/}
+        {/*    }*/}
+        {/*    panelContent={*/}
+        {/*      <div>*/}
+        {/*        /!*<FormGroup>*!/*/}
+        {/*        /!*    <Label>Current location</Label>*!/*/}
+        {/*        /!*    <PlacesAutocomplete*!/*/}
+        {/*        /!*      inputProps={inputProps}*!/*/}
+        {/*        /!*      onSelect={this.handleSelect}*!/*/}
+        {/*        /!*      classNames={{input: "form-control"}}*!/*/}
+        {/*        /!*    />*!/*/}
+        {/*        /!*</FormGroup>*!/*/}
+        {/*        <FormGroup>*/}
+        {/*          {*/}
+        {/*            // for every custom data field specified in the component state,*/}
+        {/*            // render an input with the appropriate key/value pair*/}
+        {/*            Object.keys(this.state.deviceClientName).map(inputKey =>*/}
+        {/*                <FormGroup style={{display:"flex"}} key={inputKey}>*/}
+        {/*                  <Input value={this.state.deviceClientName[inputKey].value} placeholder="New device endpoint client name" style={{flex: 1}} onChange={(e) => {*/}
+        {/*                    this.setState(*/}
+        {/*                        { deviceClientName: {...this.state.deviceClientName, [inputKey]: {...this.state.deviceClientName[inputKey], key: inputKey, value: e.target.value} }})}}/>*/}
+
+
+        {/*                  /!*<Input value={this.state.deviceClientName[inputKey]} placeholder="New device endpoint client name" style={{flex: 1, marginRight:"15px"}}*!/*/}
+        {/*                  /!*       onChange={(e) => {*!/*/}
+        {/*                  /!*         // console.log("Update.js printing e");*!/*/}
+        {/*                  /!*         // console.log(e)*!/*/}
+        {/*                  /!*         // console.log(this.state.deviceClientName)*!/*/}
+        {/*                  /!*         this.setState({*!/*/}
+        {/*                  /!*           deviceClientName: {...this.state.deviceClientName, [inputKey]: {...this.state.deviceClientName[inputKey], value: e.target.value} }})}}/>*!/*/}
+        {/*                </FormGroup>*/}
+        {/*            )*/}
+        {/*          }*/}
+        {/*          <Link to="#" onClick={ () => this.appendDevice() }>*/}
+        {/*            Add a device*/}
+        {/*          </Link>*/}
+        {/*        </FormGroup>*/}
+        {/*        <Button disabled={this.state.updateButtonDisabled} color="primary" onClick={this.handleUpdateProduct}>Update</Button>*/}
+        {/*      </div>*/}
+        {/*    }*/}
+        {/*/>*/}
       </div>
     );
   }

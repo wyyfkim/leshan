@@ -12,7 +12,11 @@ import NotFound from './pages/NotFound';
 import CombineScan from './pages/CombineScan';
 import CombineList from './pages/CombineList';
 import SplitProduct from './pages/SplitProduct';
-import ManageDevice from './deviceManagement/App';
+import ManageDeviceHome from './deviceManagement/App';
+import RegisterDevice from "./deviceManagement/components/RegisterDevice";
+import ManageDevice from "./deviceManagement/components/ManageDevice";
+
+import ManageDevices from './deviceManagement/components/ManageDevices'
 
 const Routes = () => (
   <Router>
@@ -28,7 +32,13 @@ const Routes = () => (
         <Route exact path="/products/:productId/split" component={SplitProduct} />
         <Route exact path="/combineScan" component={CombineScan} />
         <Route exact path="/combineList" component={CombineList} />
-        <Route exact path="/manageDevice" component={ManageDevice} />
+        <Route exact path="/manageDevice" component={ManageDeviceHome} />
+        <Route exact path="/register-device" component={RegisterDevice} />
+        <Route exact path="/manage-devices" component={ManageDevices} />
+        <Route path="/manage-device/:deviceId" component={ManageDevice} />
+
+
+
         <Route path="*" component={NotFound} />
       </Switch>
     </App>

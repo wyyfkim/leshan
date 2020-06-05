@@ -66,10 +66,12 @@
     "bootstrap": "^4.0.0",
     "dotenv": "^2.0.0",
     "ethereum-blockies-png": "^0.1.2",
+    "multiselect-react-dropdown": "^1.5.0",
     "qrcode.react": "^0.7.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-google-maps": "^9.4.5",
+    "react-multi-select-component": "^2.0.7",
     "react-notify-toast": "^0.4.0",
     "react-places-autocomplete": "^6.1.2",
     "react-redux": "^5.0.6",
@@ -79,6 +81,7 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
+    "solidity-util": "github:willitscale/solidity-util",
     "truffle-hdwallet-provider": "^1.0.0-web3one.5"
   },
   "scripts": {
@@ -124,5 +127,6 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

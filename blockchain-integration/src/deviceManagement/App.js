@@ -45,7 +45,7 @@ class App extends Component {
           deviceManagerInstance: instance
         });
   
-        console.log(`Contract address: ${instance.address}`);
+        console.log(`Device Contract address: ${instance.address}`);
       }).catch(error => {
         console.log(error);
         this.setState({
@@ -96,6 +96,14 @@ class App extends Component {
       );
     }
   }
+  redirect = () => {
+    window.location.href = 'http://localhost:8080';
+    return null;
+  }
+  send = () => {
+    window.location.href = 'http://localhost:3000/manageDevices';
+    return null;
+  }
   render() {
     let statusTag;
 
@@ -117,8 +125,8 @@ class App extends Component {
               defaultSelectedKeys={['1']}
               style={{ lineHeight: '64px' }}
             >
-              <Menu.Item style = {{background: '#51B897'}}key="1">
-                <Link to="/manageDevice" className="nav-text" style = {{background: '#51B897'}}>IoT Device Management</Link>
+              <Menu.Item style = {{background: '#038935'}}key="1">
+                <Link to="/manageDevice" className="nav-text" style = {{background: '#038935'}}>IoT Device Management</Link>
               </Menu.Item>
               <Menu.Item key="2" style={{ float: 'right' }}>
                 Status: {statusTag}
@@ -144,10 +152,14 @@ class App extends Component {
                   {/*</SubMenu>*/}
                   <SubMenu key="sub2" title={<span><Icon type="laptop" />Devices</span>}>
                     <Menu.Item key="3">
-                      <Link to="/register-device" className="nav-text">Register</Link>
+                      <Link to="/register-device"  className="nav-text">Register</Link>
+                      {/*<button onClick={this.redirect} className="registerButton">Register</button>*/}
                     </Menu.Item>
                     <Menu.Item key="4">
-                      <Link to="/manage-devices" className="nav-text">Manage</Link>
+                      <Link to="/manage-devices" >  Manage</Link>
+
+                      {/*<Link style = {{background: '#038935', color: '#fff'}} to="/manage-devices" className="nav-text">Manage</Link>*/}
+                      {/*<button style = {{background: '#038935', color: '#fff'}} onClick={this.send}>Manage</button>*/}
                     </Menu.Item>
                     {/*<Menu.Item key="5">*/}
                     {/*  <Link to="/lookup-device" className="nav-text">Lookup</Link>*/}

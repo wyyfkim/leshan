@@ -209,11 +209,11 @@ public class LeshanClientDemo {
         }
 
         // Abort if unexpected options
-        if (cl.getArgs().length > 0) {
-            System.err.println("Unexpected option or arguments : " + cl.getArgList());
-            formatter.printHelp(USAGE, options);
-            return;
-        }
+//        if (cl.getArgs().length > 0) {
+//            System.err.println("Unexpected option or arguments : " + cl.getArgList());
+//            formatter.printHelp(USAGE, options);
+//            return;
+//        }
 
         // Abort if PSK config is not complete
         if ((cl.hasOption("i") && !cl.hasOption("p")) || !cl.hasOption("i") && cl.hasOption("p")) {

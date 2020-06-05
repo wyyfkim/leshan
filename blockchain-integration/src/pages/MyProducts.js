@@ -8,6 +8,9 @@ import faList from '@fortawesome/fontawesome-free-solid/faList'
 import faGroup from '@fortawesome/fontawesome-free-solid/faObjectGroup'
 
 import AnnotatedSection from '../components/AnnotatedSection'
+
+import UpdateGodUser from '../components/UpdateGodUser';
+import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import Search from '../components/Search';
 import {Button} from "reactstrap";
 
@@ -17,8 +20,13 @@ class MyProducts extends Component {
     super(props);
 
     this.state = {
-      products: []
+      products: [],
+        smartContract: ""
     };
+      props.web3.eth.getBalance(props.web3Accounts[0], function (err, result) {
+          document.getElementById("EtherBalance").innerHTML = props.web3.fromWei(result, 'ether');
+      });
+
   }
 
   redirect = () => {
@@ -29,25 +37,42 @@ class MyProducts extends Component {
 
 
   componentDidMount() {
+
     this.props.passageInstance.getOwnerProducts({ from: this.props.web3Accounts[0] })
       .then((result) => {
         result.map((productId) => {
           this.props.passageInstance.getProductById(String(productId).valueOf(), "latest")
             .then((result) => {
-              const product = {
-                name: result[0],
-                description: result[1],
-                latitude: parseFloat(result[2]),
-                longitude: parseFloat(result[3]),
-                versionCreationDate: Date(result[4]),
-                versions: result[5],
-                id: productId,
-              }
-              this.setState({products: [...this.state.products, product]})
-            })
-            .catch((error) => {
-              console.log(error);
-            })
+                this.props.passageInstance.getProductByIdExtra(String(productId).valueOf(), "latest")
+                    .then((savedName) => {
+                        console.log("MyProduct.js printing retrieved data from getProductByIdExtra..")
+                        console.log(savedName)
+                        this.props.passageInstance.getProductByDeviceClientName(String(savedName[0]).valueOf()).then((id) => {
+                            console.log("MyProduct.js printing retrieved id from getProductByDeviceClientName (id, TAlert, LAlert)..")
+                            console.log(id)
+                            const product = {
+                                name: result[0],
+                                description: result[1],
+                                latitude: parseFloat(result[2]),
+                                longitude: parseFloat(result[3]),
+                                versionCreationDate: Date(result[4]),
+                                versions: result[5],
+                                id: productId,
+                                deviceClientName: id[0]}
+                            this.setState({products: [...this.state.products, product]})
+                        })
+                        // const product = {
+                        //     name: result[0],
+                        //     description: result[1],
+                        //     latitude: parseFloat(result[2]),
+                        //     longitude: parseFloat(result[3]),
+                        //     versionCreationDate: Date(result[4]),
+                        //     versions: result[5],
+                        //     id: productId,
+                        //     deviceClientName: savedName}
+                        // this.setState({products: [...this.state.products, product]})
+                    })
+            }).catch((error) => {console.log(error);})
           return false;
         })
       });
@@ -84,7 +109,7 @@ class MyProducts extends Component {
           annotationContent={
             <div>
               <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faList}/>
-              My products
+              My applications
               <Link style={{marginLeft: "10px"}} to="/create">Create +</Link>
             </div>
           }
@@ -92,8 +117,8 @@ class MyProducts extends Component {
             <div>
               {products && products.length > 0 ? products : 
               <div>
-                You did not create a product yet.
-                <Link style={{marginLeft: "10px"}} to="/create">Create a product</Link>
+                You did not create an application yet.
+                <Link style={{marginLeft: "10px"}} to="/create">Create a application</Link>
               </div>}
             </div>
           }
@@ -109,13 +134,31 @@ class MyProducts extends Component {
             panelContent={
               <div>
                 <div>
-                    <Link color="primary" to="/manageDevice">Manage device</Link>
-                    {/*<Button style={{marginLeft: "10px"}} onClick={this.redirect}></Button>*/}
+                    <Link color="primary" to="/register-device">Register a new device</Link>
                 </div>
+                  <div>
+                      <Link color="primary" to="/manage-devices">Manage devices</Link>
+                      {/*<Button style={{marginLeft: "10px"}} onClick={this.redirect}></Button>*/}
+                  </div>
               </div>
             }
           />
 
+          <AnnotatedSection
+              annotationContent={
+                  <div>
+                      <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faUser}/>
+                      Account information
+                  </div>
+              }
+              panelContent={
+                  <div>
+                      <div>Ethereum account : {this.props.web3Accounts[0]}</div>
+                      <div>Ether balance : <span id="EtherBalance"></span></div>
+                      <div>Samrt contract address : {this.props.passageInstance.address}</div>
+                  </div>
+              }
+          />
         {/*<AnnotatedSection*/}
         {/*  annotationContent={*/}
         {/*    <div>*/}
@@ -143,7 +186,8 @@ function mapStateToProps(state) {
   return {
     passageInstance: state.reducer.passageInstance,
     productIdToView: state.reducer.productIdToView,
-    web3Accounts: state.reducer.web3Accounts
+    web3Accounts: state.reducer.web3Accounts,
+    web3: state.reducer.web3
   };
 }
 

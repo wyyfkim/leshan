@@ -182,11 +182,11 @@ public class LeshanServerDemo {
         }
 
         // Abort if unexpected options
-        if (cl.getArgs().length > 0) {
-            System.err.println("Unexpected option or arguments : " + cl.getArgList());
-            formatter.printHelp(USAGE, options);
-            return;
-        }
+//        if (cl.getArgs().length > 0) {
+//            System.err.println("Unexpected option or arguments : " + cl.getArgList());
+//            formatter.printHelp(USAGE, options);
+//            return;
+//        }
 
         // get local address
         String localAddress = cl.getOptionValue("lh");

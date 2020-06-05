@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import QRCode from 'qrcode.react'
 import { Link } from 'react-router-dom'
 import { withGoogleMap, GoogleMap, Marker, Polyline } from "react-google-maps"
+import DeviceManager, {getDefaultAccount } from '../deviceManagement/DeviceManager';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faInfoCircle from '@fortawesome/fontawesome-free-solid/faInfoCircle'
@@ -18,6 +19,7 @@ import {
     Button,
     Table
 } from 'reactstrap';
+import {addHexPrefix} from "ethereumjs-util";
 
 /*
   View component
@@ -39,15 +41,26 @@ class View extends Component {
             certifications: [],
             id: "",
             customDataJson: "",
-            alerts: ""
+            tempAlerts: [],
+            locaAlerts: [],
+            deviceClientName: ''
         };
     }
 
     // when initially loading the page, fetch the requested product
     componentDidMount(){
         this.fetchProduct(this.props);
+        this.fectchDevice(this.props);
     }
+    async fectchDevice(props) {
+        let deviceManager = await DeviceManager;
+        let result = await deviceManager.getDevicesByAppId(props.match.params.productId, { from: getDefaultAccount() });
+        console.log(result)
+        this.setState({
+            deviceClientName: result
+        })
 
+    }
 
 
     // fetch a product from the blockchain by productId (optionally, a "versionId" of that product can be specified)
@@ -56,37 +69,27 @@ class View extends Component {
         // get the requested product (at the requested version if specified, otherwise it gets the latest version)
         this.props.passageInstance.getProductById(String(props.match.params.productId).valueOf(), props.match.params.versionId ? String(props.match.params.versionId).valueOf() : "latest")
             .then((result) => {
-                console.log("printing retrieved product...")
-                console.log(result)
-                // once we have the product data, we update the component's state
-                this.setState({
-                    name: result[0],
-                    description: result[1],
-                    latitude: parseFloat(result[2]),
-                    longitude: parseFloat(result[3]),
-                    versionCreationDate: new Date(result[4].c * 1000).toString(),
-                    versions: [],
-                    id: props.match.params.productId,
-                    certifications: [],
-                    alerts: result[6]
+                // console.log(this.props.passageInstance)
+                this.props.passageInstance.getProductByIdExtra(String(props.match.params.productId).valueOf(), "latest").then((deviceInfo) => {
+                        // once we have the product data, we update the component's state
+                    this.setState({
+                        name: result[0],
+                        description: result[1],
+                        latitude: parseFloat(result[2]),
+                        longitude: parseFloat(result[3]),
+                        versionCreationDate: new Date(result[4].c * 1000).toString(),
+                        versions: [],
+                        id: props.match.params.productId,
+                        certifications: [],
+                        tempAlerts: deviceInfo[1].split(";"),
+                        locaAlerts: deviceInfo[2].split(";"),
+                        // deviceClientName: deviceInfo[0]
+                    })
                 })
-
-                // then, we fetch the product's certification details
-                // const certificationsArray = result[6];
-                // certificationsArray.map((certificationId) => {
-                //     return this.props.passageInstance.getCertificationById(String(certificationId).valueOf())
-                //         .then((certificationResult) => {
-                //             const certification = {
-                //                 name: certificationResult[0],
-                //                 imageUrl: certificationResult[1],
-                //                 id: certificationId,
-                //             }
-                //             this.setState({certifications: [...this.state.certifications, certification]})
-                //         });
-                // });
-
                 // then, we get the product's versions list
                 const versionsArray = result[5];
+                // console.log("View.js printing versoinsArray...")
+                // console.log(versionsArray)
                 versionsArray.map((versionId) => {
                     this.props.passageInstance.getVersionLatLngById(String(versionId).valueOf())
                         .then((latLngResult) => {
@@ -111,6 +114,7 @@ class View extends Component {
         // add it to the rest of the product's data (in the component state)
         this.props.passageInstance.getProductCustomDataById(String(props.match.params.productId).valueOf(), props.match.params.versionId ? String(props.match.params.versionId).valueOf() : "latest")
             .then((result) => {
+                console.log(result)
                 this.setState({
                     customDataJson: result
                 })
@@ -122,10 +126,74 @@ class View extends Component {
             })
         // console.log(this.state)
         // console.log(this.state.versions)
-
     }
 
+
+
     render() {
+
+
+
+        const tempAlertList = this.state.tempAlerts.map((alert) => {
+            console.log(alert)
+            console.log(typeof (alert))
+            if (alert !=  undefined && alert.trim().length != 0) {
+                return (
+                    <li>{alert.trim()}</li>
+                )
+            }
+        })
+        const locaAlertList = this.state.locaAlerts.map((alert) => {
+            console.log(alert)
+            if (alert !=  undefined && alert.trim() != "") {
+                return (
+                    <li>{alert.trim()}</li>
+                )
+            }
+        })
+
+        const tempContent = function() {
+            console.log(tempAlertList)
+            if (tempAlertList != undefined && tempAlertList.length > 0 && tempAlertList[1] != undefined) {
+                return (<AnnotatedSection
+                    annotationContent={
+                        <div>
+                            <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faCertificate}/>
+                            Temperature alert
+                        </div>
+                    }
+                    panelContent={
+                        <div>
+                            <ul>
+                                {tempAlertList}
+                            </ul>
+                        </div>
+                    }
+                />)
+            }
+        }
+        const locaContent = function () {
+            console.log("locaAlertList")
+            console.log(locaAlertList)
+            if (locaAlertList != undefined && locaAlertList.length > 0 && locaAlertList[1] != undefined) {
+                return (<AnnotatedSection
+                    annotationContent={
+                        <div>
+                            <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faCertificate}/>
+                            Location alert
+                        </div>
+                    }
+                    panelContent={
+                        <div>
+                            <ul>
+                                {locaAlertList}
+                            </ul>
+                        </div>
+                    }
+                />)
+            }
+        }
+
 
         // this is the JSX of the versions list section of the page
         const versionsList = this.state.versions.map((version, index) => {
@@ -190,6 +258,9 @@ class View extends Component {
         // used to define the customData to display whether it's available in the state
         const customData = this.state.customDataJson ? JSON.parse(this.state.customDataJson) : {};
 
+
+
+
         // the actual JSX that we return is below
         return (
             <div>
@@ -198,7 +269,7 @@ class View extends Component {
                     annotationContent={
                         <div>
                             <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faInfoCircle}/>
-                            Product definition
+                            Application definition
                         </div>
                     }
                     panelContent={
@@ -215,6 +286,10 @@ class View extends Component {
                             <tr>
                                 <th scope="row">Last updated on</th>
                                 <td>{this.state.versionCreationDate}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Connected device</th>
+                                <td>{this.state.deviceClientName}</td>
                             </tr>
                             {
                                 Object.keys(customData).map(key =>
@@ -241,7 +316,7 @@ class View extends Component {
                         <div>
                             <QRCode value={this.props.match.params.productId}/>
                             <div>
-                                Unique product identifier
+                                Unique identifier
                                 <pre>{this.state.id}</pre>
                             </div>
                         </div>
@@ -267,7 +342,7 @@ class View extends Component {
                                 :
                                 <Link to={"/products/" + this.props.match.params.productId + "/update"}>
                                     <Button color="success">
-                                        Update product
+                                        Update
                                     </Button>
                                 </Link>
                             }
@@ -307,20 +382,8 @@ class View extends Component {
                 {/*/>*/}
 
                  {/*Alerts section*/}
-                <AnnotatedSection
-                    annotationContent={
-                        <div>
-                            <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faCertificate}/>
-                            Temperature alert
-                        </div>
-                    }
-                    panelContent={
-                        <div>
-                            {this.state.alerts}
-                            {/*{certificationsList && certificationsList.length > 0 ? certificationsList : "No alert."}*/}
-                        </div>
-                    }
-                />
+                {tempContent()}
+                {locaContent()}
 
                 {/* Versions section */}
                 <AnnotatedSection

@@ -3,7 +3,7 @@ import { Link, withRouter } from 'react-router-dom'
 import {connect} from 'react-redux';
 import Notifications, {notify} from 'react-notify-toast'
 
-import PassageMainContractJson from '../build/contracts/PassageMain.json'
+import PassageMainContractJson from '../build/contracts/ApplicationManagement.json'
 import getWeb3 from './utils/getWeb3'
 
 import blockies from 'ethereum-blockies-png'

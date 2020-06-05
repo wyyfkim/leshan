@@ -26,7 +26,7 @@ class ManageDevices extends Component {
       }
 
       let devices = await Promise.all(devicePromises);
-
+      console.log(devices)
       this.setState({
         instance,
         devices,
@@ -58,8 +58,8 @@ class ManageDevices extends Component {
                   <List.Item>
                     <List.Item.Meta
                       /*avatar={<Icon type="profile" style={{ fontSize: 36 }} />}*/
-                      title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Device ID ${this.state.deviceIds[index]}`}</Link>}
-                      description={`Identifier ${device[1]}`}
+                      title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                      // description={`Identifier ${device[1]}`}
                     />
                   </List.Item>
                 )}

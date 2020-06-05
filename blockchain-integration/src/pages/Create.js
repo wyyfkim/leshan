@@ -29,7 +29,8 @@ class Create extends Component {
       customDataInputs: {},
       selectedCategories: {},
       buttonDisabled: false,
-      ebayCategoryMap: ebayCategoryMap
+      ebayCategoryMap: ebayCategoryMap,
+      deviceClientName: ''
     }
     this.onChange = (address) => this.setState({ address })
   }
@@ -70,7 +71,8 @@ class Create extends Component {
       }
       return false;
     })
-
+    console.log(typeof certificationsArray)
+    console.log(certificationsArray)
     // generate a 'clean' representation of the custom data
     var customDataObject = {}
     Object.keys(this.state.customDataInputs).map(inputKey => {
@@ -86,13 +88,25 @@ class Create extends Component {
       const categoryKey = `Category ${inputKey}`
       return customDataObject[categoryKey] = this.state.selectedCategories[inputKey].category.categoryName
     })
-
-    // actually call the smart contract method
-    this.props.passageInstance.createProduct(this.state.name, this.state.description, this.state.latitude.toString(), this.state.longitude.toString(), certificationsArray, JSON.stringify(customDataObject), {from: this.props.web3Accounts[0], gas:1000000})
-      .then((result) => {
-        // since we use an event watcher to redirect the user to the newly created product's View page,
-        // nothing actually happens here after we create a product
-      })
+    console.log(typeof JSON.stringify(customDataObject))
+    console.log( JSON.stringify(customDataObject).toString())
+    // this.props.passageInstance.createProduct(this.state.name, this.state.description, this.state.latitude.toString(), this.state.longitude.toString(), '{}', this.state.deviceClientName, {from: this.props.web3Accounts[0], gas:1000000})
+    //     .then((result) => {
+    //       // since we use an event watcher to redirect the user to the newly created product's View page,
+    //       // nothing actually happens here after we create a product
+    //     })
+    console.log(this.state.deviceClientName)
+    console.log(this.state.latitude.toString())
+    this.props.passageInstance.createProduct(this.state.name, this.state.description, this.state.latitude.toString(), this.state.longitude.toString(), JSON.stringify(customDataObject), this.state.deviceClientName, {from: this.props.web3Accounts[0], gas:1000000})
+        .then((result) => {
+          // since we use an event watcher to redirect the user to the newly created product's View page,
+          // nothing actually happens here after we create a product
+        })
+    // this.props.passageInstance.createProduct(this.state.name, this.state.description, this.state.latitude.toString(), this.state.longitude.toString(), JSON.stringify(customDataObject), this.state.deviceClientName, {from: this.props.web3Accounts[0], gas:1000000})
+    //     .then((result) => {
+    //       // since we use an event watcher to redirect the user to the newly created product's View page,
+    //       // nothing actually happens here after we create a product
+    //     })
   }
 
   handleGeoSelect = (address) => {
@@ -110,15 +124,15 @@ class Create extends Component {
   // TODO: improve this -- there's clearly a better way to handle this
   handleCategorySelect = (event, selectedCategoryLevel) => {
     const categoryId = event.target.value;
-    const categoryObject = 
-      selectedCategoryLevel === 0 ? 
+    const categoryObject =
+      selectedCategoryLevel === 0 ?
       this.state.ebayCategoryMap.rootCategoryNode.childCategoryTreeNodes.find(category => category.category.categoryId === categoryId)
       :
       this.state.selectedCategories[selectedCategoryLevel].childCategoryTreeNodes.find(category => category.category.categoryId === categoryId)
 
     const selectedCategories = Object.assign({}, this.state.selectedCategories)
     selectedCategories[parseInt(selectedCategoryLevel, 10)+1] = categoryObject
-    
+
     Object.keys(selectedCategories).map((categoryLevel) => {
       var shouldResetCustomDataInputs = false;
       if(parseInt(categoryLevel, 10) > parseInt(selectedCategoryLevel, 10)+1){
@@ -140,12 +154,12 @@ class Create extends Component {
   // retrieves a leaf category's aspects/properties from the eBay API
   // e.g. the "Vehicles > Sedan" category has the following aspects: "Make, Model, Year, Transmission, Engine, Color", etc.
   setCustomAspects = (categoryId) => {
-   
+
     // TODO: implement a thin back-end server (using Express.js?) to handle the OAuth token request flow.
     // Below is a temporary way to make the request work. Later on, we'll replace that with a call to our thin back-end server
     // to get a token instead of hardcoding a token value like the one below (which is requested manually and expires every 2 hours)
     const token = ""; // should start with something like "v^1.1#..."
-    
+
     // actually fetch the aspects
     fetch(`https://api.ebay.com/commerce/taxonomy/v1_beta/category_tree/2/get_item_aspects_for_category?category_id=${categoryId}`, {
       headers: {
@@ -187,19 +201,24 @@ class Create extends Component {
           annotationContent={
             <div>
               <FontAwesomeIcon fixedWidth style={{paddingTop:"3px", marginRight:"6px"}} icon={faStar}/>
-              Product information
+              Application information
             </div>
           }
           panelContent={
             <div>
               <FormGroup>
                   <Label>Name</Label>
-                  <Input placeholder="Product name" value={this.state.name} onChange={(e) => {this.setState({name: e.target.value})}}></Input>
+                  <Input placeholder="Application name" value={this.state.name} onChange={(e) => {this.setState({name: e.target.value})}}></Input>
               </FormGroup>
               <FormGroup>
                   <Label>Description</Label>
-                  <Input placeholder="Product description" value={this.state.description} onChange={(e) => {this.setState({description: e.target.value})}}></Input>
+                  <Input placeholder="Application description" value={this.state.description} onChange={(e) => {this.setState({description: e.target.value})}}></Input>
               </FormGroup>
+              {/*<FormGroup>*/}
+              {/*  <Label>Device client name</Label>*/}
+              {/*  <Input placeholder="Device client name" value={this.state.deviceClientName} onChange={(e) => {this.setState({deviceClientName: e.target.value})}}></Input>*/}
+              {/*</FormGroup>*/}
+
               {/*<FormGroup>*/}
               {/*    <Label>Current location</Label>*/}
               {/*    <PlacesAutocomplete*/}
@@ -208,35 +227,37 @@ class Create extends Component {
               {/*      classNames={{input: "form-control"}}*/}
               {/*    />*/}
               {/*</FormGroup>*/}
-              <FormGroup>
-                  <Label>Categorie(s)</Label>
-                  <Input defaultValue="" type="select" name="select" id="exampleSelect" onChange={(e) => this.handleCategorySelect(e, 0)}>
-                    {/* This is the first category dropdown, which represents the 1st level of categories (from the root node) */}
-                    <option disabled value="" key="none">(select)</option>
-                    {this.state.ebayCategoryMap.rootCategoryNode ?
-                      this.state.ebayCategoryMap.rootCategoryNode.childCategoryTreeNodes.map((categoryObject, index) => {
-                        return (<option value={categoryObject.category.categoryId} key={index}>{categoryObject.category.categoryName}</option>)
-                      })
-                      :
-                      undefined}
-                  </Input>
-                  {
-                    // these are the lower level categories (level 2, level 3, etc., until a leaf category is reached)
-                    Object.keys(this.state.selectedCategories).map(categoryLevel => (
-                      this.state.selectedCategories[categoryLevel].childCategoryTreeNodes ?
-                        <Input defaultValue="" key={categoryLevel} type="select" name="select" id="exampleSelect" onChange={(e) => this.handleCategorySelect(e, categoryLevel)}>
-                          <option disabled value="" key="none">(select)</option>
-                          {
-                            this.state.selectedCategories[categoryLevel].childCategoryTreeNodes.map((categoryObject, index) => {
-                              return (<option value={categoryObject.category.categoryId} key={index}>{categoryObject.category.categoryName}</option>)
-                            })
-                          }
-                        </Input>
-                        :
-                        null
-                    ))
-                  }
-              </FormGroup>
+
+              {/*<FormGroup>*/}
+              {/*    <Label>Categorie(s)</Label>*/}
+              {/*    <Input defaultValue="" type="select" name="select" id="exampleSelect" onChange={(e) => this.handleCategorySelect(e, 0)}>*/}
+              {/*      /!* This is the first category dropdown, which represents the 1st level of categories (from the root node) *!/*/}
+              {/*      <option disabled value="" key="none">(select)</option>*/}
+              {/*      {this.state.ebayCategoryMap.rootCategoryNode ?*/}
+              {/*        this.state.ebayCategoryMap.rootCategoryNode.childCategoryTreeNodes.map((categoryObject, index) => {*/}
+              {/*          return (<option value={categoryObject.category.categoryId} key={index}>{categoryObject.category.categoryName}</option>)*/}
+              {/*        })*/}
+              {/*        :*/}
+              {/*        undefined}*/}
+              {/*    </Input>*/}
+              {/*    {*/}
+              {/*      // these are the lower level categories (level 2, level 3, etc., until a leaf category is reached)*/}
+              {/*      Object.keys(this.state.selectedCategories).map(categoryLevel => (*/}
+              {/*        this.state.selectedCategories[categoryLevel].childCategoryTreeNodes ?*/}
+              {/*          <Input defaultValue="" key={categoryLevel} type="select" name="select" id="exampleSelect" onChange={(e) => this.handleCategorySelect(e, categoryLevel)}>*/}
+              {/*            <option disabled value="" key="none">(select)</option>*/}
+              {/*            {*/}
+              {/*              this.state.selectedCategories[categoryLevel].childCategoryTreeNodes.map((categoryObject, index) => {*/}
+              {/*                return (<option value={categoryObject.category.categoryId} key={index}>{categoryObject.category.categoryName}</option>)*/}
+              {/*              })*/}
+              {/*            }*/}
+              {/*          </Input>*/}
+              {/*          :*/}
+              {/*          null*/}
+              {/*      ))*/}
+              {/*    }*/}
+              {/*</FormGroup>*/}
+
               {/*<FormGroup>*/}
               {/*  <Label>*/}
               {/*    Certification(s)*/}
@@ -274,7 +295,7 @@ class Create extends Component {
                   Add a custom data field
                 </Link>
               </FormGroup>
-              <Button disabled={this.state.buttonDisabled} color="primary" onClick={this.handleCreateNewProduct}>Create product</Button>
+              <Button disabled={this.state.buttonDisabled} color="primary" onClick={this.handleCreateNewProduct}>Create</Button>
             </div>
           }
         />

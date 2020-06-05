@@ -136,7 +136,7 @@ angular.module('securityControllers', [])
             let account = getWeb3.eth.defaultAccount;
             let DeviceABIstr = '[{"constant": false,"inputs": [{"internalType": "bytes32","name": "_identifier","type": "bytes32"},{"internalType": "string","name": "_metadataHash","type": "string"},{"internalType": "string","name": "_firmwareHash","type": "string"},{"internalType": "string","name": "_endpointClientName","type": "string"}],"name": "createDevice","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"payable": false,"stateMutability": "nonpayable","type": "function"}]';
             let DeviceABIJSON = JSON.parse(DeviceABIstr);
-            let DeviceConstractAddress = "0x8636Ea23454A8e2Ca9da12a5446FeC8A2D834953";
+            let DeviceConstractAddress = "0x73651f89379550EBFD84b394579Fb1d8604eAc01";
             let DeviceContract = web3.eth.contract(DeviceABIJSON);
             let DeviceManager = DeviceContract.at(DeviceConstractAddress)
             if ($scope.form.$valid) {
@@ -148,10 +148,10 @@ angular.module('securityControllers', [])
                     console.log(String($scope.pskValue).valueOf())
                     console.log(String($scope.endpoint).valueOf())
 
-                    DeviceManager.createDevice("0x1234", String($scope.pskIdentity).valueOf(), String($scope.pskValue).valueOf(), String($scope.endpoint).valueOf(), { from: account}, (error, txHash) => {
-                        console.log(error)
-                        console.log(txHash)
-                    });
+                    // DeviceManager.createDevice("0x1234", String($scope.pskIdentity).valueOf(), String($scope.pskValue).valueOf(), String($scope.endpoint).valueOf(), { from: account}, (error, txHash) => {
+                    //     console.log(error)
+                    //     console.log(txHash)
+                    // });
                     // console.log("sghaldkjfgh!!!2")
 
                 } else if($scope.securityMode == "rpk") {
@@ -159,6 +159,8 @@ angular.module('securityControllers', [])
                 } else {
                     var security = {endpoint: $scope.endpoint, x509 : true};
                 }
+                console.log("security printing..")
+                console.log(security)
                 if(security) {
                     $http({method: 'PUT', url: "api/security/clients/", data: security, headers:{'Content-Type': 'text/plain'}})
                     .success(function(data, status, headers, config) {

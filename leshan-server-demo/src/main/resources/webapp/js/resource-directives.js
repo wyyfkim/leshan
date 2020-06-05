@@ -26,16 +26,24 @@ angular.module('resourceDirectives', [])
     //     let deviceContract = web3.eth.contract(deviceABIJSON);
     //     let deviceManager = deviceContract.at(deviceConstractAddress)
 
+        //ProductManager
         //addProductAlert, getProductByID
         let productABIstr = '[{"constant": false,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "_alertData","type": "string"}],"name": "addTemperaturAlert","outputs": [{"name": "newAlert","type": "string"}],"payable": false,"stateMutability": "nonpayable","type": "function"},' +
             '{"constant": false,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "_alertData","type": "string"}],"name": "addLocationAlert","outputs": [{"name": "newAlert","type": "string"}],"payable": false,"stateMutability": "nonpayable","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x4f3A291c059DaE10F891B6a6b8Ff881590Df58d0";
+        let productConstractAddress = "0xC5272039c102932e347aBCC715d6260A2c8d239e";
         let productContract = web3.eth.contract(productABIJSON);
         let productManager = productContract.at(productConstractAddress)
 
+        //DeviceManager
+        //getAppIdByDeviceClientName
+        let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
+        let deviceABIJSON = JSON.parse(deviceABIstr);
+        let deviceConstractAddress = "0x6B3EA59D57eF066b7400adcCce5f3B7fbA2260c6";
+        let deviceContract = web3.eth.contract(deviceABIJSON);
+        let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
         restrict: "E",
         replace: true,
@@ -148,11 +156,15 @@ angular.module('resourceDirectives', [])
                         if (data.success && data.content) {
                             var date = new Date()
                             var dateStr = date.toLocaleString(undefined, {day: 'numeric',month: 'numeric',year: 'numeric', hour: '2-digit', minute: '2-digit'})
+                            console.log(scope)
+                            console.log($routeParams)
                             console.log(scope.resource.path)
                             console.log(typeof scope.resource.path)
                             if (scope.resource.path == "/3303/0/5700") {
                                 console.log(productManager)
-                                productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                console.log(deviceManager)
+                                deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                // productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
                                     console.log("halgfhajkdbviluaer!!!")
                                     console.log(productID) //result[0]->id  result[1]->oldAlertStr
                                     console.log("Printing oldAlertstr..")
@@ -164,7 +176,9 @@ angular.module('resourceDirectives', [])
                                         let newAlertStr = oldAlertStr + ";" + alertStr
                                         console.log(newAlertStr)
 
-                                        productManager.addTemperaturAlert(productID, newAlertStr, {from: account}, function (error, result) {
+                                        productManager.addTemperaturAlert(
+                                            productID,
+                                            newAlertStr,  (error, result) => {
                                             console.log("inside!!!!3")
                                             console.log(result)
                                         })
@@ -174,7 +188,8 @@ angular.module('resourceDirectives', [])
                             }
                             if (scope.resource.path == "/6/0/0") {
                                 console.log(scope.resource.path)
-                                productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                    deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                    // productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
                                     console.log("halgfhajkdbviluaer!!!")
                                     console.log(productID) //result[0]->id  result[1]->oldAlertStr
                                     console.log("Printing old location alert str..")
