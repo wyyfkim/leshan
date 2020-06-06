@@ -1,7 +1,7 @@
 import DeviceManager, { getDefaultAccount } from '../DeviceManager';
 
 import React, { Component } from 'react';
-import { Spin, List, message } from 'antd';
+import {Spin, List, message, Divider} from 'antd';
 import { Link } from 'react-router-dom';
 
 class ManageDevices extends Component {
@@ -10,7 +10,9 @@ class ManageDevices extends Component {
     this.state = {
       loading: true,
       instance: null,
-      devices: []
+      devices: [],
+      activeDevices: [],
+      deactiveDevices: [],
     }
   }
 
@@ -26,12 +28,23 @@ class ManageDevices extends Component {
       }
 
       let devices = await Promise.all(devicePromises);
-      console.log(devices)
+      var activeDevices = []
+      var deactiveDevices = []
+      for (var index = 0; index < devices.length; index++) {
+        let device = devices[index];
+        if (device[6]) {
+          deactiveDevices.push(device)
+        } else {
+          activeDevices.push(device)
+        }
+      }
       this.setState({
         instance,
         devices,
         deviceIds,
-        loading: false
+        loading: false,
+        activeDevices,
+        deactiveDevices,
       });
     } catch (error) {
       console.log(error);
@@ -40,37 +53,64 @@ class ManageDevices extends Component {
   }
 
   render() {
-    const { devices, loading } = this.state;
+    const { activeDevices, deactiveDevices, loading } = this.state;
 
     return (
       <div>
         <Spin spinning={loading} className="loading-spin">
-          {devices.length > 0 && !loading &&
+          {activeDevices.length > 0 && !loading &&
             <div>
               <p>
-                Below you can find your devices. Click to see more details and manage.
+
+                Below you can find your active devices. Click to see more details and manage.
               </p>
               <List
                 bordered={true}
                 itemLayout="horizontal"
-                dataSource={devices}
+                dataSource={activeDevices}
                 renderItem={(device, index) => (
                   <List.Item>
                     <List.Item.Meta
-                      /*avatar={<Icon type="profile" style={{ fontSize: 36 }} />}*/
                       title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
-                      // description={`Identifier ${device[1]}`}
                     />
                   </List.Item>
                 )}
               />
             </div>
           }
-          {devices.length === 0 && !loading &&
-            <p>You don't have any devices registered.</p>
+          {activeDevices.length === 0 && !loading &&
+            <p>You don't have any active devices registered.</p>
+          }
+          <br></br>
+          <Divider />
+          <br></br>
+          {deactiveDevices.length > 0 && !loading &&
+          <div>
+            <p>
+              Below you can find your deactivated devices. Click to see more details and manage.
+            </p>
+            <List
+                bordered={true}
+                itemLayout="horizontal"
+                dataSource={deactiveDevices}
+                renderItem={(device, index) => (
+                    <List.Item>
+                      <List.Item.Meta
+                          title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                      />
+                    </List.Item>
+                )}
+            />
+          </div>
+          }
+          {deactiveDevices.length === 0 && !loading &&
+          <p>You don't have any deactivated devices.</p>
           }
         </Spin>
       </div>
+
+
+
     )
   }
 }
