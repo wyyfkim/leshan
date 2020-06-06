@@ -270,9 +270,9 @@ class ManageDevice extends Component {
         connectedDevices[index].trim()
         if (connectedDevices[index].trim().localeCompare(endpointClientName) != 0 && connectedDevices[index].trim()!="") {
           newConnectedDevicesStr = newConnectedDevicesStr + connectedDevices[index]
-        }
-        if (index != connectedDevices.length - 1) {
-          newConnectedDevicesStr = newConnectedDevicesStr + ", "
+          if (index != connectedDevices.length - 1) {
+            newConnectedDevicesStr = newConnectedDevicesStr + ", "
+          }
         }
       }
       let applicationManager = await ApplicationManager;
