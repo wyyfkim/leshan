@@ -1,10 +1,32 @@
 import getWeb3 from '../utils/web3';
 import DeviceManager, { getDefaultAccount } from '../DeviceManager';
+import ApplicationArtifact from '../artifacts/Application.json';
 import { addHexPrefix } from 'ethereumjs-util';
 
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {Tag, Button, Input, Card, Timeline, Divider, Spin, Alert, Icon, notification, message, List} from 'antd';
+import TruffleContract from "truffle-contract";
+
+let web3
+let ApplicationManager = new Promise(function (resolve, reject) {
+  getWeb3.then(results => {
+    web3 = results.web3;
+
+    const applicationManager = TruffleContract(ApplicationArtifact);
+    applicationManager.setProvider(web3.currentProvider);
+    return applicationManager.deployed().then(instance => {
+      console.log('Initiating ApplicationManager instance...');
+      resolve(instance);
+    }).catch(error => {
+      reject(error);
+    });
+
+
+  }).catch(error => {
+    reject(error);
+  });
+});
 
 const openNotificationWithIcon = (type, message, description) => {
   notification[type]({
@@ -27,7 +49,7 @@ class ManageDevice extends Component {
       showEditPublicKey: false,
       showEditApplicationId: false,
       showEditProductID: false,
-      showEditOwner: false
+      showEditOwner: false,
     }
 
     this.commonChange = this.commonChange.bind(this);
@@ -47,14 +69,17 @@ class ManageDevice extends Component {
     try {
       let web3 = (await getWeb3).web3;
       let instance = await DeviceManager;
-      let device = await instance.devices(0);
+      let device = await instance.devices(this.state.deviceId);
+
       // console.log("printing device...")
       // console.log(device)
       // console.log("printing device2...")
+      console.log(device)
 
       this.setState({
         web3,
-        instance
+        instance,
+        deactivated: device[6]
       });
 
       this.updateDeviceData();
@@ -72,17 +97,11 @@ class ManageDevice extends Component {
     try {
       const { instance, deviceId } = this.state;
       let device = await instance.devices(deviceId);
-      console.log("printing device...")
-      console.log(device)
-      console.log("printing device2...")
-
       let signatureCount = await instance.deviceSignatureCount(deviceId);
       let allEvents = instance.allEvents({ fromBlock: 0, toBlock: 'latest' });
       allEvents.get((error, logs) => {
         let filteredData = logs.filter(el => eventsToSave.includes(el.event) && el.args.deviceId.toNumber() === parseInt(deviceId, 10));
         if (!error) {
-          // instance.getProductidByClientName(String(device[5]).valueOf(), (productID) => {
-          console.log(device)
             this.setState({
               data: filteredData,
               loading: false,
@@ -93,7 +112,8 @@ class ManageDevice extends Component {
               applicationName: device[4],
               // productID: device[4],
               signatureCount: signatureCount.toNumber(),
-              endpointClientName: device[5]
+              endpointClientName: device[5],
+              deactivated: device[6]
             })
 
         }
@@ -107,20 +127,8 @@ class ManageDevice extends Component {
           ownerNew: owner
         })
       });
-      // let productIDCheck = await instance.getdeviceFirmByClientName(String(this.state.endpointClientName).valueOf());
-      // console.log("printing productIDcheck")
-      // console.log(productIDCheck)
-      // allEvents.get((error, logs) => {
-      //   if (!error) {
-      //     // instance.getProductidByClientName(String(device[5]).valueOf(), (productID) => {
-      //     this.setState({
-      //       endpointClientName: productIDCheck
-      //     })
-      //   }
-      // })
     } catch (error) {
       console.log(error);
-      //message.error(error.message);
       this.setState({
         loading: false,
         showError: true
@@ -249,6 +257,37 @@ class ManageDevice extends Component {
 
   }
 
+  async deactivate() {
+    const { instance, deviceId, applicationId, endpointClientName, deactivated } = this.state;
+
+    let tempResult = await instance.changeActivityStatus(deviceId, { from: getDefaultAccount(), gas:1000000 });
+    let connectedDevicesStr = await instance.getDevicesByAppId(applicationId, { from: getDefaultAccount() });
+    var newConnectedDevicesStr = ''
+    if (!deactivated) {
+      let connectedDevices = connectedDevicesStr.split(",")
+      console.log(connectedDevices)
+      for (var index = 0; index < connectedDevices.length; index++) {
+        connectedDevices[index].trim()
+        if (connectedDevices[index].trim().localeCompare(endpointClientName) != 0 && connectedDevices[index].trim()!="") {
+          newConnectedDevicesStr = newConnectedDevicesStr + connectedDevices[index]
+        }
+        if (index != connectedDevices.length - 1) {
+          newConnectedDevicesStr = newConnectedDevicesStr + ", "
+        }
+      }
+      let applicationManager = await ApplicationManager;
+    } else {
+      newConnectedDevicesStr = connectedDevicesStr.trim() == ""? endpointClientName : connectedDevicesStr + "," + endpointClientName
+    }
+    let tempResultForUpdateDevices = await instance.updateAppConnectedDevices(applicationId, newConnectedDevicesStr,  { from: getDefaultAccount() })
+    console.log(newConnectedDevicesStr)
+    console.log(instance)
+    this.setState({
+      deactivated: !this.state.deactivated
+    });
+
+  }
+
   commonChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -257,7 +296,6 @@ class ManageDevice extends Component {
 
   render() {
     const { web3, loading, showError, owner, identifier, publicKey, applicationId, applicationName, productID, signatureCount, showEditApplicationId, showEditIdentifier, showEditPublicKey, showEditOwner, showEditProductID, endpointClientName } = this.state;
-console.log(endpointClientName)
     let identifierContent = () => {
       if (showEditIdentifier) {
         return (
@@ -276,25 +314,6 @@ console.log(endpointClientName)
         </div>
       )
     }
-
-    // let productIDContent = () => {
-    //   if (showEditProductID) {
-    //     return (
-    //         <div>
-    //           <Input name="productID" value={this.state.productIDNew} onChange={this.commonChange} maxLength="66" />
-    //           <Button type="primary" style={{ marginTop: '10px' }} onClick={() => this.saveData('product')}>Save</Button>
-    //         </div>
-    //     )
-    //   }
-    //   return (
-    //       <div>
-    //         Product ID: {productID.length > 0 ? productID : 'empty'}&nbsp;
-    //         {owner === getDefaultAccount() &&
-    //         <a><Icon type="edit" onClick={() => this.toggleEdit('product')} /></a>
-    //         }
-    //       </div>
-    //   )
-    // }
 
     let publicKeyContent = () => {
       if (showEditPublicKey) {
@@ -326,15 +345,7 @@ console.log(endpointClientName)
       // }
       return (
           <div>
-            {/*inked application Name: {applicationName.length > 0 ? applicationName : 'empty'}&nbsp;*/}
             Linked application Name: <Link to={`/products/${applicationId}`}>{applicationName.length > 0 ? applicationName : 'empty'}</Link>
-
-            {/*<Link to={"/"} test>*/}
-            {/*<Link to={'/'}Linked application Name: {applicationName.length > 0 ? applicationName : 'empty'}>*/}
-
-            {/*{owner === getDefaultAccount() &&*/}
-            {/*<a><Icon type="edit" onClick={() => this.toggleEdit('applicationId')} /></a>*/}
-            {/*}*/}
           </div>
       )
     }
@@ -345,7 +356,6 @@ console.log(endpointClientName)
           </div>
       )
     }
-
     let transferContent = () => {
       if (showEditOwner) {
         return (
@@ -375,12 +385,12 @@ console.log(endpointClientName)
           {loading === false && showError === false && typeof publicKey !== 'undefined' &&
             <div>
               <strong><div style={{ marginBottom: '20px' }}>{enpointClientNameContent()}</div></strong>
-              {/*<strong><div style={{ marginBottom: '20px' }}>{identifierContent()}</div></strong>*/}
+              <Button style={{ marginLeft: 8 }} onClick={() => this.deactivate()}>
+                {this.state.deactivated? "Activate" : "Deactivate"}
+              </Button>
               <Divider />
-              {/*<div style={{ marginBottom: '20px' }}>{productIDContent()}</div>*/}
               <div style={{ marginBottom: '20px' }}>{publicKeyContent()}</div>
               <div style={{ marginBottom: '20px' }}>{applicationNameContent()}</div>
-              {/*<div style={{ marginBottom: '20px' }}>{enpointClientNameContent()}</div>*/}
               {transferContent()}
               <Divider />
               {signatureCount > 0 &&
@@ -396,8 +406,6 @@ console.log(endpointClientName)
                     <Timeline style={{ marginTop: '10px' }}>
                       {this.state.data.map(el => {
                         if (el.event === 'DeviceCreated')
-                          console.log(el.args)
-                        // return <Timeline.Item color='green'>Device created by &nbsp;<Link to={"/lookup-entity/" + el.args.owner}><Tag>{el.args.owner}</Tag></Link>with &nbsp;<Link to={"/manage-device/" + el.args.deviceId.toNumber()}><Tag>ID {el.args.deviceId.toNumber()}</Tag></Link>, identifier <code>{el.args.identifier}</code>, metadata hash <code>{el.args.metadataHash}</code> and firmware hash <code>{el.args.firmwareHash} and product id <code>{el.args.productID}</code></code></Timeline.Item>
                         return <Timeline.Item color='green'>Device created by &nbsp;<Link to={"/lookup-entity/" + el.args.owner}><Tag>{el.args.owner}</Tag></Link>with endpoint client name <code>{el.args.endpointClientName}</code>, public key <code>{el.args.publicKey}</code> and linked application <code>{el.args.applicationName} </code></Timeline.Item>
                         if (el.event === 'DevicePropertyUpdated')
                           return <Timeline.Item>Property {web3.toUtf8(el.args.property)} updated to <code>{el.args.newValue}</code></Timeline.Item>
