@@ -35,7 +35,7 @@ const openNotificationWithIcon = (type, message, description) => {
   });
 };
 
-const eventsToSave = ['DeviceCreated', 'DevicePropertyUpdated', 'DeviceTransfered', 'DeviceSigned', 'SignatureRevoked'];
+const eventsToSave = ['DeviceCreated', 'DevicePropertyUpdated', 'DeviceTransfered', 'DeviceSigned', 'SignatureRevoked', 'DeviceActivityStatusUpdated'];
 
 class ManageDevice extends Component {
   constructor(props) {
@@ -282,10 +282,17 @@ class ManageDevice extends Component {
     let tempResultForUpdateDevices = await instance.updateAppConnectedDevices(applicationId, newConnectedDevicesStr,  { from: getDefaultAccount() })
     console.log(newConnectedDevicesStr)
     console.log(instance)
-    this.setState({
-      deactivated: !this.state.deactivated
-    });
-
+    let allEvents = instance.allEvents({ fromBlock: 0, toBlock: 'latest' });
+    allEvents.get((error, logs) => {
+      let filteredData = logs.filter(el => eventsToSave.includes(el.event) && el.args.deviceId.toNumber() === parseInt(deviceId, 10));
+      if (!error) {
+        this.setState({
+          data: filteredData,
+          deactivated: !this.state.deactivated,
+        })
+        console.log(this.state.data)
+      }
+    })
   }
 
   commonChange(e) {
@@ -406,11 +413,11 @@ class ManageDevice extends Component {
                     <Timeline style={{ marginTop: '10px' }}>
                       {this.state.data.map(el => {
                         if (el.event === 'DeviceCreated')
-                        return <Timeline.Item color='green'>Device created by &nbsp;<Link to={"/lookup-entity/" + el.args.owner}><Tag>{el.args.owner}</Tag></Link>with endpoint client name <code>{el.args.endpointClientName}</code>, public key <code>{el.args.publicKey}</code> and linked application <code>{el.args.applicationName} </code></Timeline.Item>
+                        return <Timeline.Item color='green'>Device created by &nbsp;<Tag>{el.args.owner}</Tag>with endpoint client name <code>{el.args.endpointClientName}</code>, public key <code>{el.args.publicKey}</code> and linked application <code>{el.args.applicationName} </code></Timeline.Item>
                         if (el.event === 'DevicePropertyUpdated')
                           return <Timeline.Item>Property {web3.toUtf8(el.args.property)} updated to <code>{el.args.newValue}</code></Timeline.Item>
-                        if (el.event === 'DeviceTransfered')
-                          return <Timeline.Item color='orange'>Device transfered to &nbsp;<Link to={"/lookup-entity/" + el.args.newOwner}><Tag>{el.args.newOwner}</Tag></Link></Timeline.Item>
+                        if (el.event === 'DeviceActivityStatusUpdated')
+                          return <Timeline.Item color='orange'>Device is set to be {el.args.newValue? "deactivated" : "active"} at &nbsp;<Tag>{Date.now().toLocaleString(undefined, {day: 'numeric',month: 'numeric',year: 'numeric', hour: '2-digit', minute: '2-digit'})}</Tag></Timeline.Item>
                         if (el.event === 'DeviceSigned')
                           return <Timeline.Item color='purple'>Signature with  &nbsp;<Link to={"/check-signature/" + el.args.signatureId.toNumber()}><Tag>ID {el.args.signatureId.toNumber()}</Tag></Link>created by {el.args.signer}</Timeline.Item>  
                         if (el.event === 'SignatureRevoked')
