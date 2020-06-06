@@ -1,14 +1,10 @@
 pragma solidity ^0.5.0;
 
-
-//import "./PassageHelper.sol";
-//import "./Dictionary.sol";
 import "./PassageModel.sol";
 import "solidity-util/lib/Strings.sol";
 import "solidity-util/lib/Integers.sol";
 import "solidity-util/lib/Addresses.sol";
 
-//contract PassageMain is PassageHelper {
 contract ApplicationManagement is PassageModel{
     using Strings for string;
 
@@ -39,12 +35,9 @@ contract ApplicationManagement is PassageModel{
 
         product.name = _name;
         product.description = _description;
-//        product.certificationsIds = _certificationsIds;
         product.temperatureAlerts = "";
         product.locationAlerts = "";
 
-
-//        product.deviceClientName = _deviceClientName;
         // Add new product ID
         productIds.push(newProductId);
 
@@ -56,15 +49,9 @@ contract ApplicationManagement is PassageModel{
 
         // Fire an event to announce the creation of the product
         emit ProductCreated(newProductId, msg.sender);
-
-//        deviceClientNameToProductStruct[_deviceClientName] = product;
         return newProductId;
     }
 
-
-//    function addAlert(bytes32 _productId, string memory _alertData, string memory _category) {
-//
-//    }
     function addTemperaturAlert(
         bytes32 _productId,
         string memory _alertData
@@ -146,10 +133,6 @@ contract ApplicationManagement is PassageModel{
 
       // Return the requested data
       return (product.name, product.description, requestedVersion.latitude, requestedVersion.longitude, requestedVersion.creationDate, product.versions);
-//        return (product.name, product.description, requestedVersion.latitude, requestedVersion.longitude, requestedVersion.creationDate, product.versions, product.certificationsIds);
-
-      // TODO: return the product versions using another function (i.e. getProductVersions(_productId))
-      // instead of directly (as above)
     }
 
     function getProductCustomDataById(bytes32 _productId, bytes32 specificVersionId) external view returns (string memory customJsonData) {
@@ -167,9 +150,6 @@ contract ApplicationManagement is PassageModel{
 
         // Return the requested data
         return (requestedVersion.customJsonData);
-
-        // TODO: return the product versions using another function (i.e. getProductVersions(_productId))
-        // instead of directly (as above)
     }
 
 

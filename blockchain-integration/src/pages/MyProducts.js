@@ -13,7 +13,7 @@ import UpdateGodUser from '../components/UpdateGodUser';
 import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import Search from '../components/Search';
 import {Button} from "reactstrap";
-
+import deviceABI from '../deviceManagement/artifacts/DeviceManager.json'
 class MyProducts extends Component {
 
   constructor(props) {
@@ -34,9 +34,13 @@ class MyProducts extends Component {
       // maybe can add spinner while loading
       return null;
   }
-
+    getAddress() {
+       return deviceABI.networks["1591383745483"].address
+    }
 
   componentDidMount() {
+      var deviceAddress = deviceABI.networks["1591383745483"].address
+      var appAddress = this.props.passageInstance.address
 
     this.props.passageInstance.getOwnerProducts({ from: this.props.web3Accounts[0] })
       .then((result) => {
@@ -155,7 +159,8 @@ class MyProducts extends Component {
                   <div>
                       <div>Ethereum account : {this.props.web3Accounts[0]}</div>
                       <div>Ether balance : <span id="EtherBalance"></span></div>
-                      <div>Samrt contract address : {this.props.passageInstance.address}</div>
+                      <div>ApplicationManagement contract address : {this.props.passageInstance.address}</div>
+                      <div>Device contract address : {this.getAddress()}</div>
                   </div>
               }
           />

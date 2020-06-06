@@ -470,8 +470,8 @@ public class LeshanClientDemo {
         initializer.setInstancesForObject(DEVICE, new MyDevice());
         initializer.setInstancesForObject(LOCATION, locationInstance);
         initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new RandomTemperatureSensor());
-        List<LwM2mObjectEnabler> enablers = initializer.createAll();
 
+        List<LwM2mObjectEnabler> enablers = initializer.createAll();
         // Create CoAP Config
         NetworkConfig coapConfig;
         File configFile = new File(NetworkConfig.DEFAULT_FILE_NAME);

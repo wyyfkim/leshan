@@ -35,6 +35,8 @@ angular.module('resourceDirectives', [])
         let productABIJSON = JSON.parse(productABIstr);
         let productConstractAddress = "0xC5272039c102932e347aBCC715d6260A2c8d239e";
         let productContract = web3.eth.contract(productABIJSON);
+
+
         let productManager = productContract.at(productConstractAddress)
 
         //DeviceManager
