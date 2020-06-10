@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import { withGoogleMap, GoogleMap, Marker, Polyline } from "react-google-maps"
 import DeviceManager, {getDefaultAccount } from '../deviceManagement/DeviceManager';
 
+import EventManager from '../deviceManagement/EventManager';
+
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faInfoCircle from '@fortawesome/fontawesome-free-solid/faInfoCircle'
 import faThumbtack from '@fortawesome/fontawesome-free-solid/faThumbtack'
@@ -51,17 +53,54 @@ class View extends Component {
     componentDidMount(){
         this.fetchProduct(this.props);
         this.fectchDevice(this.props);
+        // this.fetchAlerts(this.props);
     }
     async fectchDevice(props) {
         let deviceManager = await DeviceManager;
         let result = await deviceManager.getDevicesByAppId(props.match.params.productId, { from: getDefaultAccount() });
-        console.log(result)
         this.setState({
             deviceClientName: result
         })
-
     }
 
+    async fetchAlerts(props) {
+        let eventManager = await this.props.passageInstance;
+        console.log(eventManager)
+        let appId = String(props.match.params.productId).valueOf()
+        let category = "temperature"
+        let message = "message1"
+        let timestamp = "123"
+
+        var oldExistingCategories = await eventManager.getAlertCategoriesByApplicationId(appId)
+        console.log(oldExistingCategories)
+
+        let splitted = oldExistingCategories.split(";")
+        console.log(splitted)
+        var repeated = 0;
+        for (let index = 0; index < splitted.length; index++) {
+            let c = splitted[index]
+            console.log(c)
+            console.log(c.localeCompare(category) == 0)
+            if (c.localeCompare(category) == 0) {
+                repeated = 1
+                break;
+            }
+        }
+        if (repeated == 0) {
+            oldExistingCategories = oldExistingCategories + ";" + category
+        }
+        console.log(oldExistingCategories)
+
+        let existingMessages = await eventManager.getAlertMessageByAppCategory(appId+"temperature")
+        console.log(existingMessages)
+        var newMessages = existingMessages[0] + ";" + message
+        let result = await eventManager.addAlert(appId, appId, category, newMessages, timestamp, oldExistingCategories, appId+"temperature", { from: getDefaultAccount() })
+
+        let oldExistingCategoriestest = await eventManager.getAlertCategoriesByApplicationId(appId)
+        console.log(oldExistingCategoriestest)
+        let existingMessagestest = await eventManager.getAlertMessageByAppCategory(appId+"temperature")
+        console.log(existingMessagestest)
+    }
 
     // fetch a product from the blockchain by productId (optionally, a "versionId" of that product can be specified)
     fetchProduct(props){
@@ -103,6 +142,8 @@ class View extends Component {
                         });
                     return false;
                 });
+
+
             })
             .catch((error) => {
                 // if something goes wrong when fetching the product, we just redirect
@@ -114,7 +155,7 @@ class View extends Component {
         // add it to the rest of the product's data (in the component state)
         this.props.passageInstance.getProductCustomDataById(String(props.match.params.productId).valueOf(), props.match.params.versionId ? String(props.match.params.versionId).valueOf() : "latest")
             .then((result) => {
-                console.log(result)
+                // console.log(result)
                 this.setState({
                     customDataJson: result
                 })
@@ -135,8 +176,8 @@ class View extends Component {
 
 
         const tempAlertList = this.state.tempAlerts.map((alert) => {
-            console.log(alert)
-            console.log(typeof (alert))
+            // console.log(alert)
+            // console.log(typeof (alert))
             if (alert !=  undefined && alert.trim().length != 0) {
                 return (
                     <li>{alert.trim()}</li>
@@ -144,7 +185,7 @@ class View extends Component {
             }
         })
         const locaAlertList = this.state.locaAlerts.map((alert) => {
-            console.log(alert)
+            // console.log(alert)
             if (alert !=  undefined && alert.trim() != "") {
                 return (
                     <li>{alert.trim()}</li>
@@ -153,7 +194,7 @@ class View extends Component {
         })
 
         const tempContent = function() {
-            console.log(tempAlertList)
+            // console.log(tempAlertList)
             if (tempAlertList != undefined && tempAlertList.length > 0 && tempAlertList[1] != undefined) {
                 return (<AnnotatedSection
                     annotationContent={
@@ -173,8 +214,8 @@ class View extends Component {
             }
         }
         const locaContent = function () {
-            console.log("locaAlertList")
-            console.log(locaAlertList)
+            // console.log("locaAlertList")
+            // console.log(locaAlertList)
             if (locaAlertList != undefined && locaAlertList.length > 0 && locaAlertList[1] != undefined) {
                 return (<AnnotatedSection
                     annotationContent={

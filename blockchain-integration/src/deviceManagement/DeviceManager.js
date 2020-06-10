@@ -2,6 +2,8 @@ import getWeb3 from './utils/web3';
 import TruffleContract from 'truffle-contract';
 import DeviceManagerArtifact from './artifacts/DeviceManager.json';
 import ApplicationArtifact from './artifacts/Application.json';
+import EventArtifact from './artifacts/EventManager.json';
+
 
 
 let web3;
