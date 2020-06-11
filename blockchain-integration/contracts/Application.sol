@@ -2,8 +2,6 @@ pragma solidity ^0.5.0;
 
 import "./MerkleProof.sol";
 import "./ECRecovery.sol";
-import "./EventManager.sol";
-
 
 /**
  * @title Provides base functionalities for entities.
@@ -35,7 +33,7 @@ contract EntityBase {
 /**
  * @title Provides base functionalities for devices.
  */
-contract Application is EventManager {
+contract DeviceBase {
     /// @dev Main device structucture.
     struct Device {
         // Ethereum address of a device owner.
@@ -62,7 +60,6 @@ contract Application is EventManager {
 
         string endpointClientName;
         bool deactivated;
-        uint index;
         // Additional data linked to device. Can be used to store hash of encrypted firmware on IPFS.
         //string offchainLink;
 
@@ -101,7 +98,7 @@ contract Application is EventManager {
      * @return Created device ID.
      */
     function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _applicationName, string memory _endpointClientName, string memory _allDevices) public returns (uint) {
-        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length);
+        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false);
 //        applicationToLinkedDevices[_applicationId] = _applicationName;
         deviceClientNameToAppId[_endpointClientName] = _applicationId;
         applicationToLinkedDevices[_applicationId] = _allDevices;
@@ -123,7 +120,7 @@ contract Application is EventManager {
 /**
  * @title Provides extra functionalities for devices.
  */
-contract DeviceHelper is Application {
+contract DeviceHelper is DeviceBase {
     /**
       * @notice Gets all devices owned by specified address.
       * @dev Use this function instead of filtering DeviceCreated event since devices could have been transferred between owners.
@@ -316,6 +313,6 @@ contract DeviceUpdatable is DeviceHelper, SignatureHelper {
 }
 
 /// @title Device manager core contract.
-//contract Application is EntityBase, DeviceUpdatable {
-//    /// @dev Merges contracts.
-//}
+contract Application is EntityBase, DeviceUpdatable {
+    /// @dev Merges contracts.
+}

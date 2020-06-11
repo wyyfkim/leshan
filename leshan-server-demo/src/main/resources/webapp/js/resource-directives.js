@@ -33,7 +33,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0xAF8001Fa72FC9907ff567eeC253D2e94D0DE2fFE";
+        let productConstractAddress = "0xC5272039c102932e347aBCC715d6260A2c8d239e";
         let productContract = web3.eth.contract(productABIJSON);
 
 
@@ -43,7 +43,7 @@ angular.module('resourceDirectives', [])
         //getAppIdByDeviceClientName
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x112daF43d5772b6748A189D4cd9Cf0b710d84CD9";
+        let deviceConstractAddress = "0x6B3EA59D57eF066b7400adcCce5f3B7fbA2260c6";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
@@ -162,36 +162,6 @@ angular.module('resourceDirectives', [])
                             console.log($routeParams)
                             console.log(scope.resource.path)
                             console.log(typeof scope.resource.path)
-                            if (scope.resource.path == "/3303/0/") {
-                                var oldExistingCategories = eventManager.getAlertCategoriesByApplicationId(appId)
-                                console.log(oldExistingCategories)
-                                let splitted = oldExistingCategories.split(";")
-                                console.log(splitted)
-                                var repeated = 0;
-                                for (let index = 0; index < splitted.length; index++) {
-                                    let c = splitted[index]
-                                    console.log(c)
-                                    console.log(c.localeCompare(category) == 0)
-                                    if (c.localeCompare(category) == 0) {
-                                        repeated = 1
-                                        break;
-                                    }
-                                }
-                                if (repeated == 0) {
-                                    oldExistingCategories = oldExistingCategories + ";" + category
-                                }
-                                console.log(oldExistingCategories)
-
-                                let existingMessages = eventManager.getAlertMessageByAppCategory(appId+"temperature")
-                                console.log(existingMessages)
-                                var newMessages = existingMessages[0] + ";" + message
-                                let result = eventManager.addAlert(appId, appId, category, newMessages, timestamp, oldExistingCategories, appId+"temperature", { from: getDefaultAccount() })
-
-                                let oldExistingCategoriestest = eventManager.getAlertCategoriesByApplicationId(appId)
-                                console.log(oldExistingCategoriestest)
-                                let existingMessagestest = eventManager.getAlertMessageByAppCategory(appId+"temperature")
-                                console.log(existingMessagestest)
-                            }
                             if (scope.resource.path == "/3303/0/5700") {
                                 console.log(productManager)
                                 console.log(deviceManager)
