@@ -33,7 +33,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0xC5272039c102932e347aBCC715d6260A2c8d239e";
+        let productConstractAddress = "0x7EC40181004bc0A4269D6aF4B412B0dDB66D1C7d";
         let productContract = web3.eth.contract(productABIJSON);
 
 
@@ -43,7 +43,7 @@ angular.module('resourceDirectives', [])
         //getAppIdByDeviceClientName
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x6B3EA59D57eF066b7400adcCce5f3B7fbA2260c6";
+        let deviceConstractAddress = "0x112daF43d5772b6748A189D4cd9Cf0b710d84CD9";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
@@ -174,7 +174,7 @@ angular.module('resourceDirectives', [])
                                     productManager.getProductByIdExtra(productID, "latest", (error, result) => {
                                         let oldAlertStr = result[1]
                                         console.log(oldAlertStr)
-                                        var alertStr = "Temperature too high: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
+                                        var alertStr = "Temperature: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
                                         let newAlertStr = oldAlertStr + ";" + alertStr
                                         console.log(newAlertStr)
 

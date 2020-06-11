@@ -419,7 +419,7 @@ class ManageDevice extends Component {
                         if (el.event === 'DevicePropertyUpdated')
                           return <Timeline.Item>Property {web3.toUtf8(el.args.property)} updated to <code>{el.args.newValue}</code></Timeline.Item>
                         if (el.event === 'DeviceActivityStatusUpdated')
-                          return <Timeline.Item color='orange'>Device is set to be {el.args.newValue? "deactivated" : "active"} at &nbsp;<Tag>{dateStr}</Tag></Timeline.Item>
+                          return <Timeline.Item color='orange'>Device is set to be {el.args.newValue? "deactivated" : "active"} by &nbsp;<Tag>{this.state.owner}</Tag></Timeline.Item>
                         if (el.event === 'DeviceSigned')
                           return <Timeline.Item color='purple'>Signature with  &nbsp;<Link to={"/check-signature/" + el.args.signatureId.toNumber()}><Tag>ID {el.args.signatureId.toNumber()}</Tag></Link>created by {el.args.signer}</Timeline.Item>  
                         if (el.event === 'SignatureRevoked')
