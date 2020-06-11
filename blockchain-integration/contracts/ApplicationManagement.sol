@@ -5,41 +5,7 @@ import "solidity-util/lib/Integers.sol";
 import "solidity-util/lib/Addresses.sol";
 import "./EventManager.sol";
 
-contract ApplicationManagement is EventManager{
-//    struct AlertEvent {
-//        bytes32 deviceId;
-//        bytes32 applicationId;
-//        string category;
-//        string message;
-//        string timestamp;
-//    }
-    /// @notice Maps app to a category string.
-    mapping (bytes32 => string) appToCategories;
-
-    /// @notice Maps app+category string to an AlertEvent struct.
-    mapping (string => AlertEvent) appCategoryToMessage;
-
-    ///curCategory is the current category
-    ///allCategories is the string of all categories
-    ///appCategory is the combination of appId and curCategory
-    function addAlert (bytes32 deviceId, bytes32 applicationId, string memory curCategory, string memory message, string memory timestamp, string memory allCategories, string memory appCategory) public {
-        appToCategories[applicationId] = allCategories;
-        // Create alertEvent
-        AlertEvent storage alertEvent = appCategoryToMessage[appCategory];
-        alertEvent.deviceId = deviceId;
-        alertEvent.applicationId = applicationId;
-        alertEvent.category = curCategory;
-        alertEvent.message = message;
-        alertEvent.timestamp = timestamp;
-    }
-    function getAlertCategoriesByApplicationId (bytes32 applicationId) external view returns (string memory categories) {
-        return appToCategories[applicationId];
-    }
-    function getAlertMessageByAppCategory (string calldata appCategory) external view returns (string memory messages, string memory timestamp){
-        return (appCategoryToMessage[appCategory].message, appCategoryToMessage[appCategory].timestamp);
-    }
-
-//contract ApplicationManagement is PassageModel{
+contract ApplicationManagement{
 
     using Strings for string;
 
@@ -55,7 +21,7 @@ contract ApplicationManagement is EventManager{
 //        // TODO: actor certification? ISO:9001?
 //    }
 
-    struct ProductVersion {
+    struct ApplicationVersion {
         bytes32 versionId;
         bytes32 previousVersionId;
         uint creationDate;
@@ -66,7 +32,7 @@ contract ApplicationManagement is EventManager{
         string deviceClientName;
     }
 
-    struct Product {
+    struct AppContent {
         bool exists; // always true! (used to check if the product exists)
         bool archived; // set to true when product gets merged/split
         bytes32 productId;
@@ -82,12 +48,12 @@ contract ApplicationManagement is EventManager{
     /***********************
       MAPPINGS & STORAGE
     ***********************/
-    mapping (bytes32 => Product) public productIdToProductStruct; // access a product struct directly from an ID
+    mapping (bytes32 => AppContent) public productIdToProductStruct; // access a product struct directly from an ID
     bytes32[] public productIds; // access all product IDs
 
-    mapping (string => Product) deviceClientNameToProductStruct; // access a product struct directly from a device client name
+    mapping (string => AppContent) deviceClientNameToProductStruct; // access a product struct directly from a device client name
 
-    mapping (bytes32 => ProductVersion) public versionIdToVersionStruct; // access a version struct from a version ID
+    mapping (bytes32 => ApplicationVersion) public versionIdToVersionStruct; // access a version struct from a version ID
     bytes32[] public productVersionIds; // access all version IDs
 
     mapping (address => bytes32[]) public ownerToProductsId; // access an account's products
@@ -109,7 +75,7 @@ contract ApplicationManagement is EventManager{
         bytes32 newProductId = keccak256(abi.encodePacked(now, msg.sender));
 
         // Create product
-        Product storage product = productIdToProductStruct[newProductId];
+        AppContent storage product = productIdToProductStruct[newProductId];
 
         // Define product
         product.productId = newProductId;
@@ -143,7 +109,7 @@ contract ApplicationManagement is EventManager{
         string memory _alertData
     ) public returns (string memory newAlert) {
         // Get base product from storage
-        Product storage product = productIdToProductStruct[_productId];
+        AppContent storage product = productIdToProductStruct[_productId];
         product.temperatureAlerts = _alertData;
         return product.temperatureAlerts;
     }
@@ -153,7 +119,7 @@ contract ApplicationManagement is EventManager{
         string memory _alertData
     ) public returns (string memory newAlert) {
         // Get base product from storage
-        Product storage product = productIdToProductStruct[_productId];
+        AppContent storage product = productIdToProductStruct[_productId];
         product.locationAlerts = _alertData;
         return product.locationAlerts;
     }
@@ -167,7 +133,7 @@ contract ApplicationManagement is EventManager{
       string memory _customJsonData,
       string memory _deviceClientName
     ) public {
-        Product storage product = productIdToProductStruct[_productId];
+        AppContent storage product = productIdToProductStruct[_productId];
         if (bytes(_deviceClientName).length != 0) {
             string[] memory linkedDevices = _deviceClientName.split(";");
             for (uint i = 0; i < linkedDevices.length; i++) {
@@ -175,7 +141,7 @@ contract ApplicationManagement is EventManager{
             }
         }
         bytes32 newVersionId = keccak256(abi.encodePacked(now, msg.sender, _productId));
-        ProductVersion storage version = versionIdToVersionStruct[newVersionId];
+        ApplicationVersion storage version = versionIdToVersionStruct[newVersionId];
         version.versionId = newVersionId;
         version.creationDate = now;
         version.previousVersionId = product.latestVersionId;
@@ -190,13 +156,13 @@ contract ApplicationManagement is EventManager{
     }
     function getProductByDeviceClientName(string calldata _deviceClientName) external view returns (bytes32 productId) {
         // Get the requested product from storage
-        Product memory product = deviceClientNameToProductStruct[_deviceClientName];
+        AppContent memory product = deviceClientNameToProductStruct[_deviceClientName];
         return product.productId;
     }
 
     function getProductByIdExtra(bytes32 _productId, bytes32 specificVersionId) external view returns (string memory deviceClientName, string memory tempAlertStr, string memory locAlertStr) {
-        Product memory product = productIdToProductStruct[_productId];
-        ProductVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
+        AppContent memory product = productIdToProductStruct[_productId];
+        ApplicationVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
         if (specificVersionId != "latest") {
             // Get the requested product version
             requestedVersion = versionIdToVersionStruct[specificVersionId];
@@ -208,10 +174,10 @@ contract ApplicationManagement is EventManager{
 //        returns (string name, string description, string _latitude, string _longitude, uint versionCreationDate, bytes32[] versions, bytes32[] certificationsIds) {
 
       // Get the requested product from storage
-      Product memory product = productIdToProductStruct[_productId];
+      AppContent memory product = productIdToProductStruct[_productId];
 
       // Initialize a variable that will hold the requested product version struct
-      ProductVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
+      ApplicationVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
       if (specificVersionId != "latest") {
         // Get the requested product version
         requestedVersion = versionIdToVersionStruct[specificVersionId];
@@ -224,10 +190,10 @@ contract ApplicationManagement is EventManager{
     function getProductCustomDataById(bytes32 _productId, bytes32 specificVersionId) external view returns (string memory customJsonData) {
 
         // Get the requested product from storage
-        Product memory product = productIdToProductStruct[_productId];
+        AppContent memory product = productIdToProductStruct[_productId];
 
         // Initialize a variable that will hold the requested product version struct
-        ProductVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
+        ApplicationVersion memory requestedVersion = versionIdToVersionStruct[product.latestVersionId];
 
         if (specificVersionId != "latest") {
           // Get the requested product version
@@ -256,7 +222,7 @@ contract ApplicationManagement is EventManager{
     function getVersionLatLngById(bytes32 _versionId) external view returns (string memory latitude, string memory longitude) {
 
         // Get the requested version from storage
-        ProductVersion storage version = versionIdToVersionStruct[_versionId];
+        ApplicationVersion storage version = versionIdToVersionStruct[_versionId];
 
         // Return the requested data
         return (version.latitude, version.longitude);

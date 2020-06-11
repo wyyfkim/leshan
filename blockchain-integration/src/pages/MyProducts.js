@@ -160,7 +160,7 @@ class MyProducts extends Component {
                       <div>Ethereum account : {this.props.web3Accounts[0]}</div>
                       <div>Ether balance : <span id="EtherBalance"></span></div>
                       <div>ApplicationManagement contract address : {this.props.passageInstance.address}</div>
-                      <div>Device contract address : {this.getAddress()}</div>
+                      <div>Application contract address : {this.getAddress()}</div>
                   </div>
               }
           />

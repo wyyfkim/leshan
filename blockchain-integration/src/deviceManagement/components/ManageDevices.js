@@ -32,7 +32,10 @@ class ManageDevices extends Component {
       var deactiveDevices = []
       for (var index = 0; index < devices.length; index++) {
         let device = devices[index];
+        console.log(device)
+        console.log(device[7])
         if (device[6]) {
+
           deactiveDevices.push(device)
         } else {
           activeDevices.push(device)
@@ -71,7 +74,7 @@ class ManageDevices extends Component {
                 renderItem={(device, index) => (
                   <List.Item>
                     <List.Item.Meta
-                      title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                      title={<Link to={`/manage-device/${device[7]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
                     />
                   </List.Item>
                 )}
@@ -96,7 +99,7 @@ class ManageDevices extends Component {
                 renderItem={(device, index) => (
                     <List.Item>
                       <List.Item.Meta
-                          title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                          title={<Link to={`/manage-device/${device[7]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
                       />
                     </List.Item>
                 )}
