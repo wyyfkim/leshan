@@ -66,6 +66,7 @@ contract DeviceBase {
         // Full public key (even though parties can exchange public key other ways then use
         // blockchain to verify.)
         //string publicKey;
+        uint index;
     }
 
     /// @notice State variable for storing devices. Index in the array is also a device ID.
@@ -98,7 +99,7 @@ contract DeviceBase {
      * @return Created device ID.
      */
     function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _applicationName, string memory _endpointClientName, string memory _allDevices) public returns (uint) {
-        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false);
+        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length);
 //        applicationToLinkedDevices[_applicationId] = _applicationName;
         deviceClientNameToAppId[_endpointClientName] = _applicationId;
         applicationToLinkedDevices[_applicationId] = _allDevices;

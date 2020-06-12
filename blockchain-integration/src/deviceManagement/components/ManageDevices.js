@@ -71,7 +71,7 @@ class ManageDevices extends Component {
                 renderItem={(device, index) => (
                   <List.Item>
                     <List.Item.Meta
-                      title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                      title={<Link to={`/manage-device/${device[7].c[0]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
                     />
                   </List.Item>
                 )}
@@ -96,7 +96,7 @@ class ManageDevices extends Component {
                 renderItem={(device, index) => (
                     <List.Item>
                       <List.Item.Meta
-                          title={<Link to={`/manage-device/${this.state.deviceIds[index]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
+                          title={<Link to={`/manage-device/${device[7].c[0]}`}>{`Endpoint client name: ${device[5]}`}</Link>}
                       />
                     </List.Item>
                 )}

@@ -122,7 +122,7 @@ class MyProducts extends Component {
               {products && products.length > 0 ? products : 
               <div>
                 You did not create an application yet.
-                <Link style={{marginLeft: "10px"}} to="/create">Create a application</Link>
+                <Link style={{marginLeft: "10px"}} to="/create">Create an application</Link>
               </div>}
             </div>
           }
