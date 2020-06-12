@@ -43,12 +43,12 @@ let ApplicationManager = new Promise(function (resolve, reject) {
 
 
 const steps = [{
-  title: 'Key pairs',
-}, {
   title: 'Device Client Name',
 },
   {
   title: 'Application',
+},
+  { title: 'Key pairs',
 },
   {
   title: 'Confirm',
@@ -151,15 +151,15 @@ class RegisterDevice extends Component {
   next() {
     const { current, identifier/*, metadataHash, firmwareHash*/ } = this.state;
 
-    if ((current === 0) && (identifier === null || identifier === '')) {
-      message.error('Invalid identifier: can\'t be empty');
+    // if ((current === 0) && (identifier === null || identifier === '')) {
+    //   message.error('Invalid identifier: can\'t be empty');
       //} else if ((current === 1) && (metadataHash === null || metadataHash === '')) {
       //  message.error('Invalid metadata hash.');
       //} else if ((current === 2) && (firmwareHash === null || firmwareHash === '')) {
       //  message.error('Invalid firmware hash.');
-    } else {
+    // } else {
       this.setState(prevState => ({ current: prevState.current + 1 }));
-    }
+    // }
   }
   prev() {
     const current = this.state.current - 1;
@@ -179,7 +179,7 @@ class RegisterDevice extends Component {
       });
     }
 
-    if (this.state.current === 0 && e.target.name === 'Key pairs') {
+    if (this.state.current === 2 && e.target.name === 'Key pairs') {
       this.setState({
         showIdentifierInfo: false,
         publicKey: '',
@@ -189,14 +189,14 @@ class RegisterDevice extends Component {
       });
     }
 
-    if (this.state.current === 1 && e.target.name === 'Device Client Name') {
+    if (this.state.current === 0 && e.target.name === 'Device Client Name') {
       this.setState({
         deviceClientName: ''
         // metadata: [{ value: '' }]
       });
     }
 
-    if (this.state.current === 2 && e.target.name === 'Application') {
+    if (this.state.current === 1 && e.target.name === 'Application') {
       this.setState({
         firmware: ''
       });
@@ -338,7 +338,7 @@ class RegisterDevice extends Component {
   getContentForStep(step) {
     const { identifier, publicKey, privateKey, metadataHash, firmwareHash, metadata, firmware, deviceClientName, linkedAppName } = this.state;
     // Key pairs
-    if (step === 0) {
+    if (step === 2) {
 
       return (
           <div>
@@ -392,7 +392,7 @@ class RegisterDevice extends Component {
       );
     }
     // Device Client Name
-    if (step === 1) {
+    if (step === 0) {
       return (
           <div>
             <p>
@@ -448,7 +448,7 @@ class RegisterDevice extends Component {
       );
     }
     //Application
-    if (step === 2) {
+    if (step === 1) {
       const curves = this.state.applications
       const appMenu = (
           <Menu onClick={(e) => this.linkApp(e)}>
@@ -500,11 +500,10 @@ class RegisterDevice extends Component {
     if (step === 3) {
       return (
           <div>
-            <Card title={<div>Device Client Name {deviceClientName.length > 0 ? deviceClientName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(1)} /></a></div>} bordered={false}>
+            <Card title={<div>Device Client Name {deviceClientName.length > 0 ? deviceClientName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>} bordered={false}>
               <Meta
-                  title={<div>Publick key  {publicKey} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>}
-                  // title={<div>Metadata hash {metadataHash.length > 0 ? metadataHash : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(1)} /></a></div>}
-                  description={<div>Linked application {linkedAppName.length > 0 ? linkedAppName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(2)} /></a></div>}
+                  title={<div>Linked application {linkedAppName.length > 0 ? linkedAppName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(1)} /></a></div>}
+                  description={<div>Publick key  {publicKey} <a><Icon type="edit" onClick={() => this.gotoStep(2)} /></a></div>}
               />
             </Card>
           </div >
@@ -518,10 +517,11 @@ class RegisterDevice extends Component {
             <Icon type="check-circle-o" style={{ fontSize: 46 }} />
             <br /><br />
             <p>
-              Click below to download device configuration.
+              You device is registered successfully
+              {/*Click below to download device configuration.*/}
             </p>
-            <br />
-            <Button type="primary" style = {{background: '#038935', border: '#038935'}} onClick={() => this.downloadConfiguration()}>Download</Button>
+            {/*<br />*/}
+            {/*<Button type="primary" style = {{background: '#038935', border: '#038935'}} onClick={() => this.downloadConfiguration()}>Download</Button>*/}
           </div>
       );
     }

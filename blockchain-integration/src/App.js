@@ -77,7 +77,7 @@ class App extends Component {
         event.watch((error, result) => {
           if (!error){
             this.props.history.push('/');
-            notify.show("Product created.", "custom", 5000, { background: '#50b796', text: "#FFFFFF" });
+            notify.show("Application created.", "custom", 5000, { background: '#50b796', text: "#FFFFFF" });
           } else {
             console.log(error);
           }
