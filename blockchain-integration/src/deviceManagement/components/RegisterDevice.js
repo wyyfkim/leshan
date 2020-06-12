@@ -335,6 +335,26 @@ class RegisterDevice extends Component {
       linkedAppName: e.item.props.children
     })
   }
+
+  onChangeHandler=event=>{
+    const handleFileRead = (e) => {
+      let content = reader.result
+      let key = JSON.parse(content)
+      this.setState({
+        publicKey: key.publicKey
+      });
+
+      console.log(key)
+      console.log(key.publicKey)
+      console.log(content)
+    }
+    console.log(event.target.files[0])
+    let reader = new FileReader()
+    reader.onloadend = handleFileRead
+    console.log(reader)
+    reader.readAsText(event.target.files[0])
+    console.log(reader)
+  }
   getContentForStep(step) {
     const { identifier, publicKey, privateKey, metadataHash, firmwareHash, metadata, firmware, deviceClientName, linkedAppName } = this.state;
     // Key pairs
@@ -343,13 +363,14 @@ class RegisterDevice extends Component {
       return (
           <div>
             <p>
-              Click to generate public key / private key pair
+              Upload your public key file or type in your public key
               {/*<strong>Unique device identifier</strong> is a public key or a fingerprint of RSA/ECC public key. It can also be an Ethereum address (recommended).*/}
             </p>
 
             <br /><br />
             <p> <strong> Public key: </strong> </p>
-
+            <input type="file" name="file" onChange={this.onChangeHandler}/>
+            <br /><br />
             <Input
                 placeholder="Public key"
                 style={{ maxWidth: '800px' }}
@@ -358,31 +379,11 @@ class RegisterDevice extends Component {
                 maxLength="66"
                 onChange={(e) => this.handleChange(e)}
             />
-                        {/*<Input*/}
-            {/*    placeholder="Private key"*/}
-            {/*    style={{ maxWidth: '800px' }}*/}
-            {/*    value={privateKey}*/}
-            {/*    name="privateKey"*/}
-            {/*    maxLength="66"*/}
-            {/*    onChange={(e) => this.handleChange(e)}*/}
-            {/*/>*/}
-            {/*<Input*/}
-            {/*    placeholder="Identifier e.g. Ethereum address"*/}
-            {/*    style={{ maxWidth: '800px' }}*/}
-            {/*    value={identifier}*/}
-            {/*    name="identifier"*/}
-            {/*    maxLength="66"*/}
-            {/*    onChange={(e) => this.handleChange(e)}*/}
-            {/*/>*/}
+
             <br /><br />
-            <Button.Group size="large">
-              <Button type="primary" style = {{background: '#038935', border: '#038935'}} onClick={() => this.generateEthWallet()}>Generate key pairs</Button>
-              {/*<Dropdown overlay={ecMenu}>*/}
-              {/*  <Button type="primary">*/}
-              {/*    Generate elliptic curve key pair*/}
-              {/*  </Button>*/}
-              {/*</Dropdown>*/}
-            </Button.Group>
+            {/*<Button.Group size="large">*/}
+            {/*  <Button type="primary" style = {{background: '#038935', border: '#038935'}} onClick={() => this.generateEthWallet()}>Generate key pairs</Button>*/}
+            {/*</Button.Group>*/}
             {this.state.showIdentifierInfo ?
                 <div>
                   <br />
@@ -408,42 +409,7 @@ class RegisterDevice extends Component {
                 onChange={(e) => this.handleChange(e)}
             />
             <Divider />
-            {/*<p>*/}
-            {/*  If you already don't have one, you can use inputs below to generate SHA-3 (Keccak) hash. With multiple fields, Merkle tree will be used.*/}
-            {/*</p>*/}
-            {/*<br />*/}
-            {/*<Form>*/}
-            {/*  {metadata.map((key, index) => {*/}
-            {/*    return (*/}
-            {/*        <FormItem>*/}
-            {/*          <Input*/}
-            {/*              placeholder="Some information"*/}
-            {/*              style={{ width: '60%' }}*/}
-            {/*              value={key.value}*/}
-            {/*              maxLength="66"*/}
-            {/*              onChange={(e) => this.handleMetadataChange(e, index)}*/}
-            {/*          />*/}
-            {/*          {metadata.length > 1 ? (*/}
-            {/*              <Icon*/}
-            {/*                  className="dynamic-delete-button"*/}
-            {/*                  type="minus-circle-o"*/}
-            {/*                  disabled={metadata.length === 1}*/}
-            {/*                  onClick={() => this.removeMetadataField(index)}*/}
-            {/*              />*/}
-            {/*          ) : null}*/}
-            {/*        </FormItem>*/}
-            {/*    )*/}
-            {/*  })*/}
-            {/*  }*/}
-            {/*  <FormItem>*/}
-            {/*    <Button type="dashed" onClick={() => this.addMetadataField()} style={{ width: '60%' }}>*/}
-            {/*      <Icon type="plus" /> Add field*/}
-            {/*    </Button>*/}
-            {/*  </FormItem>*/}
-            {/*  <FormItem>*/}
-            {/*    <Button type="primary" onClick={() => this.calculateMetadataHash()}>Generate</Button>*/}
-            {/*  </FormItem>*/}
-            {/*</Form>*/}
+
           </div>
       );
     }
@@ -462,36 +428,12 @@ class RegisterDevice extends Component {
               Select the application to which the device will be linked:   <strong>{this.state.linkedAppName}</strong>
               {/*<strong>Firmware hash</strong> is a hash of actual firmware hash. Actual firmware hash is not supposed to be stored.*/}
             </p>
-            {/*<Input*/}
-            {/*    placeholder="linkedApp"*/}
-            {/*    style={{ maxWidth: '800px' }}*/}
-            {/*    value={this.state.linkedAppName}*/}
-            {/*    name="linkedApp"*/}
-            {/*    maxLength="66"*/}
-            {/*    onChange={(e) => this.handleChange(e)}*/}
-            {/*/>*/}
             <br />
             <Dropdown overlay={appMenu}>
               <Button type="primary" style = {{background: '#038935', border: '#038935'}}>
                 {this.state.linkedAppName.length > 0? this.state.linkedAppName : "Select applications"}
               </Button>
             </Dropdown>
-
-            {/*<Divider />*/}
-            {/*<p>*/}
-            {/*  You can use input to generate SHA-3 (Keccak) hash of any data.*/}
-            {/*</p>*/}
-            {/*<br />*/}
-            {/*<Input*/}
-            {/*    placeholder="Some data"*/}
-            {/*    style={{ width: '60%' }}*/}
-            {/*    value={firmware}*/}
-            {/*    name="firmware"*/}
-            {/*    onChange={(e) => this.handleChange(e)}*/}
-            {/*/>*/}
-            {/*<br />*/}
-            {/*<br />*/}
-            {/*<Button type="primary" onClick={() => this.calculateFirmwareHash()}>Generate</Button>*/}
           </div>
       );
     }
@@ -529,20 +471,11 @@ class RegisterDevice extends Component {
 
   async createDevice() {
     const { identifier, publicKey, privateKey, metadataHash, firmwareHash, address, deviceClientName, linkedApp, linkedAppName } = this.state;
-    //invoke serverlet
-    // var security = {endpoint: "testendpoint111", psk : { identity : "pskIdentity111" , key : "aabbccdd"}};
-    var security = {endpoint: "sensor1", psk : { identity : "username" , key : "aabbccdd"}};
-    // const response1 = await fetch('/api/security/clients/', {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'text/plain' },
-    //   body: JSON.stringify(security),
-    // })
-    // console.log(response1)
-    //blockchain
+
     try {
       let instance = await DeviceManager;
 
-      let identifierToSave = identifier;
+      let identifierToSave = publicKey;
       if (address !== '') {
         let addressToPad = address;
         if (address.startsWith('0x')) {
@@ -559,6 +492,13 @@ class RegisterDevice extends Component {
       console.log(existingDeviceString)
       console.log(newDeviceString)
       // let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, newDeviceString, deviceClientName, { from: getDefaultAccount(), gas:1000000 });
+      console.log(identifierToSave)
+      console.log(publicKey)
+      console.log(linkedApp)
+      console.log(linkedAppName)
+      console.log(deviceClientName)
+      console.log(newDeviceString)
+
       let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString, { from: getDefaultAccount(), gas:1000000 });
       this.watchForChanges(result.tx);
       openNotificationWithIcon('info', 'Transaction sent', 'Once mined, your device will be registered.');
