@@ -17,8 +17,21 @@ angular.module('resourceDirectives', [])
 .directive('resource',
 
     function ($compile, $routeParams, $http, dialog, $filter, lwResources, $modal, helper) {
-    let getWeb3 = new Web3(window.web3.currentProvider);
-    let account = getWeb3.eth.defaultAccount;
+        let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
+        let getWeb3 = new Web3(provider);
+        console.log(getWeb3)
+        getWeb3.eth.defaultAccount = getWeb3.eth.accounts[0]
+        console.log(getWeb3.eth.defaultAccount)
+        window.ethereum.enable();
+        // getWeb3.personal.unlockAccount(getWeb3.eth.defaultAccount).then((response) => {
+        //     console.log(response);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+        // let getWeb3 = new Web3(window.web3.currentProvider);
+        console.log(getWeb3.eth.accounts)
+        let account = getWeb3.eth.accounts[0];
+        console.log(account)
     //getProductidByClientName
     //     let deviceABIStr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_clientname","type": "string"}],"name": "getProductidByClientName","outputs": [{"internalType":"bytes32","name":"productID","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
     //     let deviceABIJSON = JSON.parse(deviceABIStr);
@@ -33,17 +46,15 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x7EC40181004bc0A4269D6aF4B412B0dDB66D1C7d";
+        let productConstractAddress = "0xde5f71e33D44F9A7799DD8713B6413D81F34ba29";
         let productContract = web3.eth.contract(productABIJSON);
-
-
         let productManager = productContract.at(productConstractAddress)
 
         //DeviceManager
         //getAppIdByDeviceClientName
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x112daF43d5772b6748A189D4cd9Cf0b710d84CD9";
+        let deviceConstractAddress = "0xE131aF7AFCe2E7F6219174F9402b056DA9277E9c";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
@@ -174,13 +185,13 @@ angular.module('resourceDirectives', [])
                                     productManager.getProductByIdExtra(productID, "latest", (error, result) => {
                                         let oldAlertStr = result[1]
                                         console.log(oldAlertStr)
-                                        var alertStr = "Temperature: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
+                                        var alertStr = "Temperature too high: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
                                         let newAlertStr = oldAlertStr + ";" + alertStr
                                         console.log(newAlertStr)
 
                                         productManager.addTemperaturAlert(
                                             productID,
-                                            newAlertStr,  (error, result) => {
+                                            newAlertStr, {from: account}, (error, result) => {
                                             console.log("inside!!!!3")
                                             console.log(result)
                                         })

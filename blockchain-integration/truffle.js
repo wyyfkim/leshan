@@ -26,10 +26,6 @@ module.exports = {
         network_id: "*",
         host: 'localhost',
         port: 9545
-    },
-    rinkeby: {
-      provider: new HDWalletProvider(secrets.mnemonic, "https://rinkeby.infura.io/v3/"+secrets.infuraApiKey),
-      network_id: '4'
     }
   },
     compilers: {

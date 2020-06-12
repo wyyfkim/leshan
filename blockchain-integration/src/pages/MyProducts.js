@@ -35,11 +35,11 @@ class MyProducts extends Component {
       return null;
   }
     getAddress() {
-       return deviceABI.networks["1591383745483"].address
+       return deviceABI.networks["1591935673354"].address
     }
 
   componentDidMount() {
-      var deviceAddress = deviceABI.networks["1591383745483"].address
+      var deviceAddress = deviceABI.networks["1591935673354"].address
       var appAddress = this.props.passageInstance.address
 
     this.props.passageInstance.getOwnerProducts({ from: this.props.web3Accounts[0] })
