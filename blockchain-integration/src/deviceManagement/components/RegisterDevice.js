@@ -459,21 +459,21 @@ class RegisterDevice extends Component {
       return (
           <div>
             <p>
-              Select the application to which the device will be linked
+              Select the application to which the device will be linked:   <strong>{this.state.linkedAppName}</strong>
               {/*<strong>Firmware hash</strong> is a hash of actual firmware hash. Actual firmware hash is not supposed to be stored.*/}
             </p>
-            <Input
-                placeholder="linkedApp"
-                style={{ maxWidth: '800px' }}
-                value={this.state.linkedAppName}
-                name="linkedApp"
-                maxLength="66"
-                onChange={(e) => this.handleChange(e)}
-            />
+            {/*<Input*/}
+            {/*    placeholder="linkedApp"*/}
+            {/*    style={{ maxWidth: '800px' }}*/}
+            {/*    value={this.state.linkedAppName}*/}
+            {/*    name="linkedApp"*/}
+            {/*    maxLength="66"*/}
+            {/*    onChange={(e) => this.handleChange(e)}*/}
+            {/*/>*/}
             <br />
             <Dropdown overlay={appMenu}>
               <Button type="primary" style = {{background: '#038935', border: '#038935'}}>
-                Created applications
+                {this.state.linkedAppName.length > 0? this.state.linkedAppName : "Select applications"}
               </Button>
             </Dropdown>
 

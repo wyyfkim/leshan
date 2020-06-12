@@ -185,7 +185,7 @@ angular.module('resourceDirectives', [])
                                     productManager.getProductByIdExtra(productID, "latest", (error, result) => {
                                         let oldAlertStr = result[1]
                                         console.log(oldAlertStr)
-                                        var alertStr = "Temperature too high: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
+                                        var alertStr = "Temperature: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
                                         let newAlertStr = oldAlertStr + ";" + alertStr
                                         console.log(newAlertStr)
 
