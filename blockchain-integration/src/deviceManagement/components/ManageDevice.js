@@ -267,12 +267,15 @@ class ManageDevice extends Component {
       let connectedDevices = connectedDevicesStr.split(",")
       console.log(connectedDevices)
       for (var index = 0; index < connectedDevices.length; index++) {
+        console.log(connectedDevices[index].trim())
+        console.log(connectedDevices[index].trim().localeCompare(endpointClientName) != 0)
+        console.log(connectedDevices[index].trim().length > 0)
         connectedDevices[index].trim()
-        if (connectedDevices[index].trim().localeCompare(endpointClientName) != 0 && connectedDevices[index].trim()!="") {
-          newConnectedDevicesStr = newConnectedDevicesStr + connectedDevices[index]
-          if (index != connectedDevices.length - 1) {
+        if (connectedDevices[index].trim().localeCompare(endpointClientName) != 0 && connectedDevices[index].trim().length > 0) {
+          if (newConnectedDevicesStr.length > 0) {
             newConnectedDevicesStr = newConnectedDevicesStr + ", "
           }
+          newConnectedDevicesStr = newConnectedDevicesStr + connectedDevices[index]
         }
       }
       let applicationManager = await ApplicationManager;
@@ -280,6 +283,7 @@ class ManageDevice extends Component {
       newConnectedDevicesStr = connectedDevicesStr.trim() == ""? endpointClientName : connectedDevicesStr + "," + endpointClientName
     }
     let tempResultForUpdateDevices = await instance.updateAppConnectedDevices(applicationId, newConnectedDevicesStr,  { from: getDefaultAccount() })
+    console.log(newConnectedDevicesStr)
     console.log(newConnectedDevicesStr)
     console.log(instance)
     let allEvents = instance.allEvents({ fromBlock: 0, toBlock: 'latest' });

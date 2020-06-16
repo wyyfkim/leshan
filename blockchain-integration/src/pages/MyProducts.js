@@ -122,7 +122,7 @@ class MyProducts extends Component {
               {products && products.length > 0 ? products : 
               <div>
                 You did not create an application yet.
-                <Link style={{marginLeft: "10px"}} to="/create">Create a application</Link>
+                <Link style={{marginLeft: "10px"}} to="/create">Create an application</Link>
               </div>}
             </div>
           }
@@ -160,7 +160,7 @@ class MyProducts extends Component {
                       <div>Ethereum account : {this.props.web3Accounts[0]}</div>
                       <div>Ether balance : <span id="EtherBalance"></span></div>
                       <div>ApplicationManagement contract address : {this.props.passageInstance.address}</div>
-                      <div>Device contract address : {this.getAddress()}</div>
+                      {/*<div>Device contract address : {this.getAddress()}</div>*/}
                   </div>
               }
           />
