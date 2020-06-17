@@ -113,7 +113,8 @@ class ManageDevice extends Component {
               // productID: device[4],
               signatureCount: signatureCount.toNumber(),
               endpointClientName: device[5],
-              deactivated: device[6]
+              deactivated: device[6],
+              type: device[8]
             })
 
         }
@@ -306,7 +307,7 @@ class ManageDevice extends Component {
   }
 
   render() {
-    const { web3, loading, showError, owner, identifier, publicKey, applicationId, applicationName, productID, signatureCount, showEditApplicationId, showEditIdentifier, showEditPublicKey, showEditOwner, showEditProductID, endpointClientName } = this.state;
+    const { web3, loading, showError, owner, identifier, publicKey, applicationId, applicationName, productID, signatureCount, showEditApplicationId, showEditIdentifier, showEditPublicKey, showEditOwner, showEditProductID, endpointClientName, type } = this.state;
     let identifierContent = () => {
       if (showEditIdentifier) {
         return (
@@ -346,24 +347,18 @@ class ManageDevice extends Component {
     }
 
     let applicationNameContent = () => {
-      // if (showEditApplicationId) {
-      //   return (
-      //     <div>
-      //       <Input name="applicationIdNew" value={this.state.applicationIdNew} onChange={this.commonChange} maxLength="66" />
-      //       <Button type="primary" style={{ marginTop: '10px' }} onClick={() => this.saveData('applicationId')}>Save</Button>
-      //     </div>
-      //   )
-      // }
       return (
           <div>
             Linked application Name: <Link to={`/products/${applicationId}`}>{applicationName.length > 0 ? applicationName : 'empty'}</Link>
+
           </div>
       )
     }
     let enpointClientNameContent = () => {
       return (
           <div>
-            Endpoint Client Name: {endpointClientName.length > 0 ? endpointClientName : 'empty'}&nbsp;
+            Endpoint Client Name: {endpointClientName.length > 0 ? endpointClientName : 'empty'}, &nbsp;
+            Device type: {type.length > 0 ? type : 'empty'}&nbsp;
           </div>
       )
     }

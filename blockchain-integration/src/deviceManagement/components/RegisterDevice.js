@@ -430,7 +430,7 @@ class RegisterDevice extends Component {
 
       let existingDeviceString = await instance.getDevicesByAppId(linkedApp, { from: getDefaultAccount()});
       let newDeviceString = existingDeviceString == ''?deviceClientName : existingDeviceString +", " +deviceClientName
-      let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString, { from: getDefaultAccount(), gas:1000000 });
+      let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString,type, { from: getDefaultAccount(), gas:1000000 });
       this.watchForChanges(result.tx);
       openNotificationWithIcon('info', 'Transaction sent', 'Once mined, your device will be registered.');
       this.setState({

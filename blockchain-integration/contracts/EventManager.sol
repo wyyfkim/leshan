@@ -5,24 +5,24 @@ contract EventManager {
     struct AlertEvent {
         bytes32 deviceId;
         bytes32 applicationId;
-//        string category;
-//        string message;
+        string category;
+        string message;
         string timestamp;
 
-        func bool alertTriggered(string message);
+//        func bool alertTriggered(string message);
     }
 
-    struct gpsAlert :: AlerEvent {
-        bytes32 latitute;
-        bytes32 longtitute;
-        bytes32 radius;
-        func bool alertTriggered(string message) {
-
-            if (latitute > 0) {
-            return true;
-}    //thre
-        }
-    }
+//    struct gpsAlert :: AlerEvent {
+//        bytes32 latitute;
+//        bytes32 longtitute;
+//        bytes32 radius;
+//        func bool alertTriggered(string message) {
+//
+//            if (latitute > 0) {
+//            return true;
+//}    //thre
+//        }
+//    }
 
     /// @notice Maps app to a category string.
     mapping (bytes32 => string) appToCategories;

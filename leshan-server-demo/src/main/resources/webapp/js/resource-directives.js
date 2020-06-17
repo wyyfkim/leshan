@@ -23,21 +23,10 @@ angular.module('resourceDirectives', [])
         getWeb3.eth.defaultAccount = getWeb3.eth.accounts[0]
         console.log(getWeb3.eth.defaultAccount)
         window.ethereum.enable();
-        // getWeb3.personal.unlockAccount(getWeb3.eth.defaultAccount).then((response) => {
-        //     console.log(response);
-        // }).catch((error) => {
-        //     console.log(error);
-        // });
-        // let getWeb3 = new Web3(window.web3.currentProvider);
+
         console.log(getWeb3.eth.accounts)
         let account = getWeb3.eth.accounts[0];
         console.log(account)
-    //getProductidByClientName
-    //     let deviceABIStr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_clientname","type": "string"}],"name": "getProductidByClientName","outputs": [{"internalType":"bytes32","name":"productID","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
-    //     let deviceABIJSON = JSON.parse(deviceABIStr);
-    //     let deviceConstractAddress = "0xA21a0b94CC8a9daF1a26e3B85B8E44bAE8e49751";
-    //     let deviceContract = web3.eth.contract(deviceABIJSON);
-    //     let deviceManager = deviceContract.at(deviceConstractAddress)
 
         //ProductManager
         //addProductAlert, getProductByID
@@ -46,7 +35,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x289496C383F963c9b2a606B3A3383aA77A37B555";
+        let productConstractAddress = "0x88F0c46851AD1CFF93216B6320f50a52590c2694";
         let productContract = web3.eth.contract(productABIJSON);
         let productManager = productContract.at(productConstractAddress)
 
@@ -54,7 +43,7 @@ angular.module('resourceDirectives', [])
         //getAppIdByDeviceClientName
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0xa5Be7D8Bf747AD950AdA664840C099A3d01Fb693";
+        let deviceConstractAddress = "0x7C68302DA5e3194687D21A66ABbfC8Df61f29650";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
