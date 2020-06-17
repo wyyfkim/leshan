@@ -68,7 +68,6 @@ contract DeviceBase {
         //string publicKey;
         uint index;
         string deviceType;
-        string threshold;
     }
 
     /// @notice State variable for storing devices. Index in the array is also a device ID.
@@ -83,6 +82,9 @@ contract DeviceBase {
 
     /// @notice deviceClientName to linkedAPP id
     mapping (string => bytes32) deviceClientNameToAppId;
+
+    /// @notice deviceClientName to threshold string
+    mapping (string => string) deviceClientNameToThreshold;
     /// @dev Fired on creation of new device.
     event DeviceCreated(uint indexed deviceId, address indexed owner, bytes32 identifier, string publicKey, bytes32 applicationId, string applicationName, string endpointClientName, string allDevices);
 
@@ -101,10 +103,11 @@ contract DeviceBase {
      * @return Created device ID.
      */
     function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _applicationName, string memory _endpointClientName, string memory _allDevices, string memory _type, string memory _threshold) public returns (uint) {
-        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length, _type, _threshold);
+        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length, _type);
         //        applicationToLinkedDevices[_applicationId] = _applicationName;
         deviceClientNameToAppId[_endpointClientName] = _applicationId;
         applicationToLinkedDevices[_applicationId] = _allDevices;
+        deviceClientNameToThreshold[_endpointClientName] = _threshold;
         uint deviceId = devices.push(newDevice) - 1;
         ownerDeviceCount[msg.sender]++;
         emit DeviceCreated(deviceId, msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, _allDevices);
@@ -117,7 +120,9 @@ contract DeviceBase {
     function getAppIdByDeviceClientName(string memory _deviceClientName) public view returns (bytes32) {
         return deviceClientNameToAppId[_deviceClientName];
     }
-
+    function getThresholdByDeviceClientName(string memory _deviceClientName) public view returns (string memory) {
+        return deviceClientNameToThreshold[_deviceClientName];
+    }
 }
 
 /**
@@ -259,6 +264,8 @@ contract DeviceUpdatable is DeviceHelper, SignatureHelper {
 
     /// @dev Fired on device property update, keeps track of historical property values.
     event DeviceActivityStatusUpdated(uint indexed deviceId, bool newValue);
+
+    event DeviceThresholdUpdated(string clientName, string thresholdStr);
     /**
      * @notice Transfer device ownership from one external account to another. Emits DeviceTransfered.
      * @param _deviceId ID of to be transfered device.
@@ -280,6 +287,11 @@ contract DeviceUpdatable is DeviceHelper, SignatureHelper {
 
     function updateAppConnectedDevices(bytes32 _applicationId, string memory _allDevices) public {
         applicationToLinkedDevices[_applicationId] = _allDevices;
+    }
+
+    function updateThreshold(string memory _deviceClientName, string memory _threshold) public {
+        deviceClientNameToThreshold[_deviceClientName] = _threshold;
+        emit DeviceThresholdUpdated(_deviceClientName, _threshold);
     }
     /**
      * @notice Update device with new identifier. Emits DevicePropertyUpdated.

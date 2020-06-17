@@ -41,7 +41,8 @@ angular.module('resourceDirectives', [])
 
         //DeviceManager
         //getAppIdByDeviceClientName
-        let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"}]';
+        let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
+            '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getThresholdByDeviceClientName","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
         let deviceConstractAddress = "0x7C68302DA5e3194687D21A66ABbfC8Df61f29650";
         let deviceContract = web3.eth.contract(deviceABIJSON);

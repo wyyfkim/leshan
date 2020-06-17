@@ -93,27 +93,25 @@ class ManageDevice extends Component {
     try {
       const { instance, deviceId } = this.state;
       let device = await instance.devices(deviceId);
+      let endpointClientName = device[5]
+      let str = await instance.getThresholdByDeviceClientName(endpointClientName)
+      let thresholdStr = str.split(",")
+      if (thresholdStr.length == 1) {
+        this.setState({
+          Temperature: thresholdStr[0]
+        })
+      } else if (thresholdStr.length == 3) {
+        this.setState({
+          Latitude: thresholdStr[0],
+          Longitude: thresholdStr[1],
+          Radius: thresholdStr[2],
+        })
+      }
+
       let signatureCount = await instance.deviceSignatureCount(deviceId);
       let allEvents = instance.allEvents({ fromBlock: 0, toBlock: 'latest' });
       allEvents.get((error, logs) => {
         let filteredData = logs.filter(el => eventsToSave.includes(el.event) && el.args.deviceId.toNumber() === parseInt(deviceId, 10));
-        let thresholdStr = device[9].split(",")
-        console.log(thresholdStr)
-        console.log(thresholdStr.length)
-
-        if (thresholdStr.length == 1) {
-          this.setState({
-            Temperature: thresholdStr[0]
-          })
-        } else if (thresholdStr.length == 3) {
-          this.setState({
-            Latitude: thresholdStr[0],
-            Longitude: thresholdStr[1],
-            Radius: thresholdStr[2],
-          })
-
-        }
-
         if (!error) {
             this.setState({
               data: filteredData,
@@ -140,6 +138,7 @@ class ManageDevice extends Component {
           ownerNew: owner
         })
       });
+
     } catch (error) {
       console.log(error);
       this.setState({
