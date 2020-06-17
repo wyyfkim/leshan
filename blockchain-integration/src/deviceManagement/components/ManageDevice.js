@@ -70,10 +70,6 @@ class ManageDevice extends Component {
       let web3 = (await getWeb3).web3;
       let instance = await DeviceManager;
       let device = await instance.devices(this.state.deviceId);
-
-      // console.log("printing device...")
-      // console.log(device)
-      // console.log("printing device2...")
       console.log(device)
 
       this.setState({
@@ -101,6 +97,23 @@ class ManageDevice extends Component {
       let allEvents = instance.allEvents({ fromBlock: 0, toBlock: 'latest' });
       allEvents.get((error, logs) => {
         let filteredData = logs.filter(el => eventsToSave.includes(el.event) && el.args.deviceId.toNumber() === parseInt(deviceId, 10));
+        let thresholdStr = device[9].split(",")
+        console.log(thresholdStr)
+        console.log(thresholdStr.length)
+
+        if (thresholdStr.length == 1) {
+          this.setState({
+            Temperature: thresholdStr[0]
+          })
+        } else if (thresholdStr.length == 3) {
+          this.setState({
+            Latitude: thresholdStr[0],
+            Longitude: thresholdStr[1],
+            Radius: thresholdStr[2],
+          })
+
+        }
+
         if (!error) {
             this.setState({
               data: filteredData,
@@ -114,9 +127,8 @@ class ManageDevice extends Component {
               signatureCount: signatureCount.toNumber(),
               endpointClientName: device[5],
               deactivated: device[6],
-              type: device[8]
+              type: device[8],
             })
-
         }
 
         let { identifier, publicKey, applicationId, applicationName, endpointClientName, owner, productID } = this.state;
@@ -307,7 +319,7 @@ class ManageDevice extends Component {
   }
 
   render() {
-    const { web3, loading, showError, owner, identifier, publicKey, applicationId, applicationName, productID, signatureCount, showEditApplicationId, showEditIdentifier, showEditPublicKey, showEditOwner, showEditProductID, endpointClientName, type } = this.state;
+    const { web3, loading, showError, owner, identifier, publicKey, applicationId, applicationName, productID, signatureCount, showEditApplicationId, showEditIdentifier, showEditPublicKey, showEditOwner, showEditProductID, endpointClientName, type, Latitude, Longitude, Radius } = this.state;
     let identifierContent = () => {
       if (showEditIdentifier) {
         return (
@@ -339,13 +351,34 @@ class ManageDevice extends Component {
       return (
         <div>
           Public key: {publicKey.length > 0 ? publicKey : 'empty'}&nbsp;
-          {owner === getDefaultAccount() &&
-            <a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')} /></a>
-          }
+          {/*{owner === getDefaultAccount() &&*/}
+          {/*  <a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')} /></a>*/}
+          {/*}*/}
         </div>
       )
     }
-
+    let thresholdContent = () => {
+      if (type.localeCompare('location') == 0) {
+        return (
+            <div>
+              Threshold: Latitude: {Latitude}, Longitude: {Longitude}, Radius: {Radius}&nbsp;
+              {owner === getDefaultAccount() &&
+              <a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')}/></a>
+              }
+            </div>
+        )
+      }
+      if (type.localeCompare('temperature') == 0) {
+        return (
+            <div>
+              Threshold: temperature {this.state.Temperature}&nbsp;
+              {owner === getDefaultAccount() &&
+              <a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')}/></a>
+              }
+            </div>
+        )
+      }
+    }
     let applicationNameContent = () => {
       return (
           <div>
@@ -399,6 +432,7 @@ class ManageDevice extends Component {
               <Divider />
               <div style={{ marginBottom: '20px' }}>{publicKeyContent()}</div>
               <div style={{ marginBottom: '20px' }}>{applicationNameContent()}</div>
+              <div style={{ marginBottom: '20px' }}>{thresholdContent()}</div>
               {transferContent()}
               <Divider />
               {signatureCount > 0 &&

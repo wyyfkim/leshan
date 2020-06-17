@@ -68,6 +68,7 @@ contract DeviceBase {
         //string publicKey;
         uint index;
         string deviceType;
+        string threshold;
     }
 
     /// @notice State variable for storing devices. Index in the array is also a device ID.
@@ -99,8 +100,8 @@ contract DeviceBase {
      * @param _endpointClientName Endpoint Client Name.
      * @return Created device ID.
      */
-    function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _applicationName, string memory _endpointClientName, string memory _allDevices, string memory _type) public returns (uint) {
-        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length, _type);
+    function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _applicationName, string memory _endpointClientName, string memory _allDevices, string memory _type, string memory _threshold) public returns (uint) {
+        Device memory newDevice = Device(msg.sender, _identifier, _publicKey, _applicationId, _applicationName, _endpointClientName, false, devices.length, _type, _threshold);
         //        applicationToLinkedDevices[_applicationId] = _applicationName;
         deviceClientNameToAppId[_endpointClientName] = _applicationId;
         applicationToLinkedDevices[_applicationId] = _allDevices;

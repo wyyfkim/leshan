@@ -13,6 +13,7 @@ import './RegisterDevice.css';
 import { Steps, Button, Input, Card, Spin, Alert, Divider, Form, Icon, Dropdown, Menu, message, notification } from 'antd';
 import {faHeading} from "@fortawesome/fontawesome-free-solid";
 import TruffleContract from "truffle-contract";
+import {FormGroup, Label} from "reactstrap";
 
 
 const Step = Steps.Step;
@@ -329,7 +330,42 @@ class RegisterDevice extends Component {
             {types.map(type => <Menu.Item key={type}>{type}</Menu.Item>)}
           </Menu>
       );
-
+      let showThreshold = () => {
+        if (this.state.type.localeCompare('location') == 0) {
+          return (
+              <div>
+                <br/>
+                <p>Input the threshold data</p>
+                <br/>
+                <FormGroup>
+                  <Label>Latitude</Label>
+                  <Input value={this.state.Latitude} onChange={(e) => {this.setState({Latitude: e.target.value})}}></Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Longitude</Label>
+                  <Input value={this.state.Longitude} onChange={(e) => {this.setState({Longitude: e.target.value})}}></Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Radius</Label>
+                  <Input value={this.state.Radius} onChange={(e) => {this.setState({Radius: e.target.value})}}></Input>
+                </FormGroup>
+              </div>
+          )
+        }
+        if (this.state.type.localeCompare('temperature') == 0) {
+          return (
+              <div>
+                <br/>
+                <p>Input the threshold data</p>
+                <br/>
+                <FormGroup>
+                  <Label>Temperature (celsius) </Label>
+                  <Input value={this.state.Temperature} onChange={(e) => {this.setState({Temperature: e.target.value})}}></Input>
+                </FormGroup>
+              </div>
+          )
+        }
+      }
       return (
           <div>
             <p>
@@ -353,6 +389,8 @@ class RegisterDevice extends Component {
                 {this.state.type.length > 0? this.state.type : "Device type"}
               </Button>
             </Dropdown>
+            <br/>
+            {showThreshold()}
           </div>
       );
     }
@@ -413,8 +451,14 @@ class RegisterDevice extends Component {
   }
 
   async createDevice() {
-    const { identifier, publicKey, privateKey, metadataHash, firmwareHash, address, deviceClientName, linkedApp, linkedAppName, type } = this.state;
-    console.log(type)
+    const { identifier, publicKey, privateKey, metadataHash, firmwareHash, address, deviceClientName, linkedApp, linkedAppName, type, Latitude, Longitude, Radius,Temperature } = this.state;
+    let thresholdStr = ''
+    if (this.state.type.localeCompare('location') == 0) {
+      thresholdStr = Latitude + "," + Longitude + "," + Radius
+    } else if (this.state.type.localeCompare('temperature') == 0) {
+      thresholdStr = Temperature
+    }
+    console.log(thresholdStr)
 
     try {
       let instance = await DeviceManager;
@@ -430,7 +474,7 @@ class RegisterDevice extends Component {
 
       let existingDeviceString = await instance.getDevicesByAppId(linkedApp, { from: getDefaultAccount()});
       let newDeviceString = existingDeviceString == ''?deviceClientName : existingDeviceString +", " +deviceClientName
-      let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString,type, { from: getDefaultAccount(), gas:1000000 });
+      let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString,type, thresholdStr,{ from: getDefaultAccount(), gas:1000000 });
       this.watchForChanges(result.tx);
       openNotificationWithIcon('info', 'Transaction sent', 'Once mined, your device will be registered.');
       this.setState({
