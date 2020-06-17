@@ -43,7 +43,7 @@ let ApplicationManager = new Promise(function (resolve, reject) {
 
 
 const steps = [{
-  title: 'Device Client Name',
+  title: 'Device Client Name and type',
 },
   {
   title: 'Application',
@@ -87,6 +87,7 @@ class RegisterDevice extends Component {
       linkedApp:'',
       linkedAppName:'',
       // options:["App1", "App2"],
+      type:'',
       options: [{name: 'Srigar', id: 1},{name: 'Sam', id: 2}]
     };
   }
@@ -150,16 +151,7 @@ class RegisterDevice extends Component {
   }
   next() {
     const { current, identifier/*, metadataHash, firmwareHash*/ } = this.state;
-
-    // if ((current === 0) && (identifier === null || identifier === '')) {
-    //   message.error('Invalid identifier: can\'t be empty');
-      //} else if ((current === 1) && (metadataHash === null || metadataHash === '')) {
-      //  message.error('Invalid metadata hash.');
-      //} else if ((current === 2) && (firmwareHash === null || firmwareHash === '')) {
-      //  message.error('Invalid firmware hash.');
-    // } else {
       this.setState(prevState => ({ current: prevState.current + 1 }));
-    // }
   }
   prev() {
     const current = this.state.current - 1;
@@ -189,7 +181,7 @@ class RegisterDevice extends Component {
       });
     }
 
-    if (this.state.current === 0 && e.target.name === 'Device Client Name') {
+    if (this.state.current === 0 && e.target.name === 'Device Client Name and type') {
       this.setState({
         deviceClientName: ''
         // metadata: [{ value: '' }]
@@ -223,69 +215,7 @@ class RegisterDevice extends Component {
       curve: 'secp256k1'
     })
   }
-  // generateEcKeyPair(curve) {
-  //   let ec = new EC(curve);
-  //   console.log(`Generating new ${curve} key pair`);
-  //   let keyPair = ec.genKeyPair();
-  //
-  //   let publicKey = keyPair.getPublic(true, 'hex');
-  //   let privateKey = keyPair.getPrivate('hex');
-  //
-  //   console.log(`Private key: ${privateKey}`);
-  //   console.log(`Public key compressed: ${publicKey}`);
-  //   console.log(`Public key uncompressed: ${keyPair.getPublic().encode('hex')}`);
-  //
-  //   this.setState({
-  //     identifier: publicKey,
-  //     showIdentifierInfo: true,
-  //     address: '',
-  //     publicKey,
-  //     privateKey,
-  //     curve
-  //   })
-  // }
-  // calculateMetadataHash() {
-  //   let elements = this.state.metadata.map(el => sha3(el.value));
-  //   console.log(`Generating Merkle root hash`);
-  //
-  //   let metadataRootSha3 = merkleRoot(elements);
-  //   console.log(`Merkle root hash ${metadataRootSha3.toString('hex')}`);
-  //
-  //   this.setState({
-  //     metadataHash: metadataRootSha3.toString('hex')
-  //   })
-  // }
-  calculateFirmwareHash() {
-    let firmwareHash = sha3(this.state.firmware);
 
-    this.setState({
-      firmwareHash: firmwareHash.toString('hex')
-    })
-  }
-  // removeMetadataField(k) {
-  //   const { metadata } = this.state;
-  //   metadata.splice(k, 1);
-  //   this.setState({
-  //     metadata
-  //   })
-  // }
-  //
-  // addMetadataField() {
-  //   const { metadata } = this.state;
-  //   metadata.push({ value: '' });
-  //   this.setState({
-  //     metadata
-  //   });
-  // }
-  //
-  // handleMetadataChange(e, index) {
-  //   const { metadata } = this.state;
-  //   metadata[index].value = e.target.value;
-  //
-  //   this.setState({
-  //     metadata
-  //   });
-  // }
   downloadConfiguration() {
     const {identifier, deviceClientName, publicKey, privateKey, linkedAppId, linkedAppName, curve } = this.state;
 
@@ -318,8 +248,6 @@ class RegisterDevice extends Component {
       configuration.curve = curve;
     }
 
-
-
     let configurationJson = JSON.stringify(configuration);
 
     let element = document.createElement("a");
@@ -329,10 +257,14 @@ class RegisterDevice extends Component {
     element.click();
   }
   linkApp(e) {
-    console.log(e)
     this.setState({
       linkedApp: e.key,
       linkedAppName: e.item.props.children
+    })
+  }
+  setType(e) {
+    this.setState({
+      type: e.key
     })
   }
 
@@ -381,9 +313,6 @@ class RegisterDevice extends Component {
             />
 
             <br /><br />
-            {/*<Button.Group size="large">*/}
-            {/*  <Button type="primary" style = {{background: '#038935', border: '#038935'}} onClick={() => this.generateEthWallet()}>Generate key pairs</Button>*/}
-            {/*</Button.Group>*/}
             {this.state.showIdentifierInfo ?
                 <div>
                   <br />
@@ -394,11 +323,17 @@ class RegisterDevice extends Component {
     }
     // Device Client Name
     if (step === 0) {
+      const types = ['location', 'temperature']
+      const typeMenu = (
+          <Menu onClick={(e) => this.setType(e)}>
+            {types.map(type => <Menu.Item key={type}>{type}</Menu.Item>)}
+          </Menu>
+      );
+
       return (
           <div>
             <p>
               Input the Device Client Name
-              {/*<strong>Metadash hash</strong> is Merkle root hash of device information or just a hash of any data.*/}
             </p>
             <Input
                 placeholder="Device Client Name"
@@ -409,7 +344,15 @@ class RegisterDevice extends Component {
                 onChange={(e) => this.handleChange(e)}
             />
             <Divider />
-
+            <p>
+              Select the device type  <strong>{this.state.type}</strong>
+            </p>
+            <br/>
+            <Dropdown overlay={typeMenu}>
+              <Button type="primary" style = {{background: '#038935', border: '#038935'}}>
+                {this.state.type.length > 0? this.state.type : "Device type"}
+              </Button>
+            </Dropdown>
           </div>
       );
     }
@@ -442,7 +385,7 @@ class RegisterDevice extends Component {
     if (step === 3) {
       return (
           <div>
-            <Card title={<div>Device Client Name {deviceClientName.length > 0 ? deviceClientName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>} bordered={false}>
+            <Card title={<div>Device client name: {deviceClientName.length > 0 ? deviceClientName : 'empty'}, device type: {this.state.type.length > 0 ? this.state.type : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>} bordered={false}>
               <Meta
                   title={<div>Linked application {linkedAppName.length > 0 ? linkedAppName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(1)} /></a></div>}
                   description={<div>Publick key  {publicKey} <a><Icon type="edit" onClick={() => this.gotoStep(2)} /></a></div>}
@@ -470,7 +413,8 @@ class RegisterDevice extends Component {
   }
 
   async createDevice() {
-    const { identifier, publicKey, privateKey, metadataHash, firmwareHash, address, deviceClientName, linkedApp, linkedAppName } = this.state;
+    const { identifier, publicKey, privateKey, metadataHash, firmwareHash, address, deviceClientName, linkedApp, linkedAppName, type } = this.state;
+    console.log(type)
 
     try {
       let instance = await DeviceManager;
@@ -484,21 +428,8 @@ class RegisterDevice extends Component {
         identifierToSave = setLengthLeft(Buffer.from(addressToPad, 'hex'), 32).toString('hex');
       }
 
-      //    function createDevice(bytes32 _identifier, string memory _publicKey, bytes32 _applicationId, string memory _endpointClientName) public returns (uint) {
-
-      // let result = await instance.createDevice(addHexPrefix(identifierToSave), addHexPrefix(metadataHash), addHexPrefix(firmwareHash), "test", { from: getDefaultAccount(), gas:1000000 });
       let existingDeviceString = await instance.getDevicesByAppId(linkedApp, { from: getDefaultAccount()});
       let newDeviceString = existingDeviceString == ''?deviceClientName : existingDeviceString +", " +deviceClientName
-      console.log(existingDeviceString)
-      console.log(newDeviceString)
-      // let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, newDeviceString, deviceClientName, { from: getDefaultAccount(), gas:1000000 });
-      console.log(identifierToSave)
-      console.log(publicKey)
-      console.log(linkedApp)
-      console.log(linkedAppName)
-      console.log(deviceClientName)
-      console.log(newDeviceString)
-
       let result = await instance.createDevice(addHexPrefix(identifierToSave), publicKey, linkedApp, linkedAppName, deviceClientName, newDeviceString, { from: getDefaultAccount(), gas:1000000 });
       this.watchForChanges(result.tx);
       openNotificationWithIcon('info', 'Transaction sent', 'Once mined, your device will be registered.');
@@ -536,14 +467,6 @@ class RegisterDevice extends Component {
                     </Button>
                 )
               }
-              {/*{*/}
-              {/*  current === 4*/}
-              {/*  && (*/}
-              {/*      <Button type="primary" onClick={() => this.reset()}>*/}
-              {/*        Reset*/}
-              {/*      </Button>*/}
-              {/*  )*/}
-              {/*}*/}
             </div>
           </Spin>
         </div>
