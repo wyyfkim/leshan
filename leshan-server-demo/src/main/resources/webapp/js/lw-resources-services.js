@@ -95,9 +95,7 @@ myModule.factory('lwResources',["$http", function($http) {
             var tree = [];
             // if (endpoint.)
             console.log(endpoint)
-            console.log(typeof endpoint)
             console.log(objectLinks)
-            console.log(typeof objectLinks)
 
             for (var i = 0; i < objectLinks.length; i++) {
 
@@ -110,8 +108,8 @@ myModule.factory('lwResources',["$http", function($http) {
                 // get list of resources (e.g. : [3] or [1,123]
                 var resourcepath = url2array(link);
                 var attributes = objectLinks[i].attributes;
-                console.log(resourcepath[0])
-                console.log(resourcepath)
+                // console.log(resourcepath[0])
+                // console.log(resourcepath)
 
                 switch (resourcepath.length) {
                 case 0:
@@ -132,6 +130,7 @@ myModule.factory('lwResources',["$http", function($http) {
                     if (!(endpoint.startsWith("GPS") && resourcepath[0] == 3303 || (endpoint.startsWith("temp") && resourcepath[0] == 6))) {
                         var object = addObject(tree, objectDefs, resourcepath[0], null);
                         console.log(object)
+                        console.log(attributes)
                         addInstance(object, resourcepath[1], attributes);
                     }
 

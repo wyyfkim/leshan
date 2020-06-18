@@ -10,7 +10,7 @@
         <Mandatory>Optional</Mandatory>
         <Resources>
             <Item ID="5513">
-                <Name>Latitude</Name>
+                <Name>Latitude, Longitude</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
                 <Mandatory>Mandatory</Mandatory>

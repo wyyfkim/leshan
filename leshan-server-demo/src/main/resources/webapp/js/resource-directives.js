@@ -35,7 +35,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x88F0c46851AD1CFF93216B6320f50a52590c2694";
+        let productConstractAddress = "0x15fcdA4187299B14c057D07Ad19E7D85901B96D2";
         let productContract = web3.eth.contract(productABIJSON);
         let productManager = productContract.at(productConstractAddress)
 
@@ -44,7 +44,7 @@ angular.module('resourceDirectives', [])
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getThresholdByDeviceClientName","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x7C68302DA5e3194687D21A66ABbfC8Df61f29650";
+        let deviceConstractAddress = "0x92EAA084Fb5a47D313bdB93182AEE4B7e867E82D";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
@@ -159,62 +159,73 @@ angular.module('resourceDirectives', [])
                         if (data.success && data.content) {
                             var date = new Date()
                             var dateStr = date.toLocaleString(undefined, {day: 'numeric',month: 'numeric',year: 'numeric', hour: '2-digit', minute: '2-digit'})
-                            console.log(scope)
-                            console.log($routeParams)
-                            console.log(scope.resource.path)
-                            console.log(typeof scope.resource.path)
                             if (scope.resource.path == "/3303/0/5700") {
                                 console.log(productManager)
                                 console.log(deviceManager)
-                                deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
-                                // productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
-                                    console.log("halgfhajkdbviluaer!!!")
-                                    console.log(productID) //result[0]->id  result[1]->oldAlertStr
-                                    console.log("Printing oldAlertstr..")
+                                deviceManager.getThresholdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, thre) => {
+                                    if (data.content.value > parseInt(thre)) {
+                                        deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                            console.log(productID) //result[0]->id  result[1]->oldAlertStr
+                                            productManager.getProductByIdExtra(productID, "latest", (error, result) => {
+                                                let oldAlertStr = result[1]
+                                                console.log(oldAlertStr)
+                                                var alertStr = "Temperature " + data.content.value + "cel is higher than " + thre + "cel ---- from device: " + $routeParams.clientId + " ---- " + dateStr;
+                                                let newAlertStr = oldAlertStr + ";" + alertStr
+                                                console.log(newAlertStr)
 
-                                    productManager.getProductByIdExtra(productID, "latest", (error, result) => {
-                                        let oldAlertStr = result[1]
-                                        console.log(oldAlertStr)
-                                        var alertStr = "Temperature: "+data.content.value+"cel ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
-                                        let newAlertStr = oldAlertStr + ";" + alertStr
-                                        console.log(newAlertStr)
-
-                                        productManager.addTemperaturAlert(
-                                            productID,
-                                            newAlertStr, {from: account}, (error, result) => {
-                                            console.log("inside!!!!3")
-                                            console.log(result)
+                                                productManager.addTemperaturAlert(
+                                                    productID,
+                                                    newAlertStr, {from: account}, (error, result) => {
+                                                        console.log("inside!!!!3")
+                                                        console.log(result)
+                                                    })
+                                                console.log("the end~")
+                                            })
                                         })
-                                        console.log("the end~")
-                                    })
+                                    }
                                 })
                             }
+                            let target = 0
+                            let locStr = ''
                             if (scope.resource.path == "/6/0/0") {
-                                console.log(scope.resource.path)
-                                    deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
-                                    // productManager.getProductByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
-                                    console.log("halgfhajkdbviluaer!!!")
-                                    console.log(productID) //result[0]->id  result[1]->oldAlertStr
-                                    console.log("Printing old location alert str..")
+                                let latRand = Math.floor(Math.random() * 100) + 1; // returns a random integer from 1 to 100
+                                let lonRand = Math.floor(Math.random() * 100) + 1; // returns a random integer from 1 to 100
+                                locStr = latRand+","+lonRand
+                                target = 1
+                                deviceManager.getThresholdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, thre) => {
 
-                                    productManager.getProductByIdExtra(productID, "latest", (error, result) => {
-                                        let oldAlertStr = result[2]
-                                        console.log(oldAlertStr)
-                                        var alertStr = "Latitude alert: "+data.content.value+" ---- from device: "+$routeParams.clientId+" ---- "+dateStr;
-                                        let newAlertStr = oldAlertStr + ";" + alertStr
-                                        console.log(newAlertStr)
-
-                                        productManager.addLocationAlert(productID, newAlertStr, {from: account}, function (error, result) {
-                                            console.log("inside!!!!3")
-                                            console.log(result)
+                                    let splittedStr = thre.split(",")
+                                    let lat = splittedStr[0]
+                                    let lon = splittedStr[1]
+                                    let rad = parseInt(splittedStr[2])
+                                    let dist = Math.sqrt(Math.pow(lat-latRand, 2) +  Math.pow(lon-lonRand, 2))
+                                    if (dist > rad) {
+                                        deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
+                                            console.log(productID) //result[0]->id  result[1]->oldAlertStr
+                                            productManager.getProductByIdExtra(productID, "latest", (error, result) => {
+                                                let oldAlertStr = result[2]
+                                                console.log(oldAlertStr)
+                                                var alertStr = "Current location is " + locStr + ", " + dist + " away from "+ lat+","+lon + " ---- from device: " + $routeParams.clientId + " ---- " + dateStr;
+                                                // var alertStr = "Latitude alert: " + data.content.value + " ---- from device: " + $routeParams.clientId + " ---- " + dateStr;
+                                                let newAlertStr = oldAlertStr + ";" + alertStr
+                                                console.log(newAlertStr)
+                                                productManager.addLocationAlert(productID, newAlertStr, {from: account}, function (error, result) {
+                                                    console.log("inside!!!!3")
+                                                    console.log(result)
+                                                })
+                                                console.log("the end~")
+                                            })
                                         })
-                                        console.log("the end~")
-                                    })
+                                    }
                                 })
                             }
                             if("value" in data.content) {
-                                // single value
-                                scope.resource.value = data.content.value;
+                                if (target) {
+                                    scope.resource.value = locStr;
+                                } else {
+                                    // single value
+                                    scope.resource.value = data.content.value;
+                                }
                             }
                             else if("values" in data.content) {
                                 // multiple instances

@@ -70,7 +70,7 @@ LEGAL DISCLAIMER
 		<Mandatory>Optional</Mandatory>
 		<Resources>
 			<Item ID="0">
-				<Name>Latitude</Name>
+				<Name>Latitude, Longitude</Name>
         <Operations>R</Operations>
         <MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Mandatory</Mandatory>
@@ -79,16 +79,16 @@ LEGAL DISCLAIMER
 				<Units>Deg</Units>
 				<Description><![CDATA[The decimal notation of latitude, e.g., -43.5723 [World Geodetic System 1984].]]></Description>
 			</Item>
-			<Item ID="1">
-				<Name>Longitude</Name>
-        <Operations>R</Operations>
-        <MultipleInstances>Single</MultipleInstances>
-				<Mandatory>Mandatory</Mandatory>
-				<Type>Float</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units>Deg</Units>
-				<Description><![CDATA[The decimal notation of longitude, e.g., 153.21760 [World Geodetic System 1984].]]></Description>
-			</Item>
+<!--			<Item ID="1">-->
+<!--				<Name>Longitude</Name>-->
+<!--        <Operations>R</Operations>-->
+<!--        <MultipleInstances>Single</MultipleInstances>-->
+<!--				<Mandatory>Mandatory</Mandatory>-->
+<!--				<Type>Float</Type>-->
+<!--				<RangeEnumeration></RangeEnumeration>-->
+<!--				<Units>Deg</Units>-->
+<!--				<Description><![CDATA[The decimal notation of longitude, e.g., 153.21760 [World Geodetic System 1984].]]></Description>-->
+<!--			</Item>-->
 			<Item ID="2">
 				<Name>Altitude</Name>
         <Operations>R</Operations>
@@ -99,16 +99,16 @@ LEGAL DISCLAIMER
 				<Units>m</Units>
 				<Description><![CDATA[The decimal notation of altitude in meters above sea level.]]></Description>
 			</Item>
-			<Item ID="3">
-				<Name>Radius</Name>
-        <Operations>R</Operations>
-        <MultipleInstances>Single</MultipleInstances>
-				<Mandatory>Optional</Mandatory>
-				<Type>Float</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units>m</Units>
-				<Description><![CDATA[The value in the Radius Resource indicates the size in meters of a circular area around a point of geometry.]]></Description>
-			</Item>
+<!--			<Item ID="3">-->
+<!--				<Name>Radius</Name>-->
+<!--        <Operations>R</Operations>-->
+<!--        <MultipleInstances>Single</MultipleInstances>-->
+<!--				<Mandatory>Optional</Mandatory>-->
+<!--				<Type>Float</Type>-->
+<!--				<RangeEnumeration></RangeEnumeration>-->
+<!--				<Units>m</Units>-->
+<!--				<Description><![CDATA[The value in the Radius Resource indicates the size in meters of a circular area around a point of geometry.]]></Description>-->
+<!--			</Item>-->
 			<Item ID="4">
 				<Name>Velocity</Name>
         <Operations>R</Operations>
