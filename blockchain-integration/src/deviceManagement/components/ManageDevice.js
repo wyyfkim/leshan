@@ -361,9 +361,9 @@ class ManageDevice extends Component {
         return (
             <div>
               Threshold: Latitude: {Latitude}, Longitude: {Longitude}, Radius: {Radius}&nbsp;
-              {owner === getDefaultAccount() &&
-              <a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')}/></a>
-              }
+              {owner === getDefaultAccount()}
+              {/*<a><Icon type="edit" onClick={() => this.toggleEdit('publicKey')}/></a>*/}
+
             </div>
         )
       }

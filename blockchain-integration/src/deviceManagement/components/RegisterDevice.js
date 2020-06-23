@@ -421,9 +421,20 @@ class RegisterDevice extends Component {
 
     // Overview/confirm
     if (step === 3) {
+      var threshold;
+      if (this.state.type.length > 0) {
+        if (this.state.type.localeCompare('location') == 0) {
+          threshold = "{latitude:" +this.state.Latitude+", longitude:"+this.state.Longitude+", radius:"+this.state.Radius+"}"
+        } else if (this.state.type.localeCompare('temperature') == 0) {
+          threshold = "temperature:" +this.state.Temperature
+        } else {
+          threshold = "empty"
+        }
+      }
+
       return (
           <div>
-            <Card title={<div>Device client name: {deviceClientName.length > 0 ? deviceClientName : 'empty'}, device type: {this.state.type.length > 0 ? this.state.type : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>} bordered={false}>
+            <Card title={<div>Device client name: {deviceClientName.length > 0 ? deviceClientName : 'empty'}, device type: {this.state.type.length > 0 ? this.state.type : 'empty'}, threshold: {threshold} <a><Icon type="edit" onClick={() => this.gotoStep(0)} /></a></div>} bordered={false}>
               <Meta
                   title={<div>Linked application {linkedAppName.length > 0 ? linkedAppName : 'empty'} <a><Icon type="edit" onClick={() => this.gotoStep(1)} /></a></div>}
                   description={<div>Publick key  {publicKey} <a><Icon type="edit" onClick={() => this.gotoStep(2)} /></a></div>}
