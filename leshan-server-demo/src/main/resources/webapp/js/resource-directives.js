@@ -35,7 +35,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x15fcdA4187299B14c057D07Ad19E7D85901B96D2";
+        let productConstractAddress = "0x85426d54Ff0AA5e791711e1015C0fCF39cD2B247";
         let productContract = web3.eth.contract(productABIJSON);
         let productManager = productContract.at(productConstractAddress)
 
@@ -44,7 +44,7 @@ angular.module('resourceDirectives', [])
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getThresholdByDeviceClientName","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x92EAA084Fb5a47D313bdB93182AEE4B7e867E82D";
+        let deviceConstractAddress = "0x4306b8EEe5C93Af5B42C2094Bb127867FA4a4D39";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
