@@ -20841,10 +20841,412 @@
       "links": {},
       "address": "0x0d312Ef71DF6095bbD2DDcaFcA5CA7491eb3C309",
       "transactionHash": "0x06749211fdb86059144ae842b4acb003e45cace21924eaba19d53b9eae8ce112"
+    },
+    "1594626710713": {
+      "events": {
+        "0x848155b8e733cfd6e7258639111d906437ddb051818f4061fc4c7cfbc575cb2e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "oldOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "DeviceTransfered",
+          "type": "event",
+          "signature": "0x848155b8e733cfd6e7258639111d906437ddb051818f4061fc4c7cfbc575cb2e"
+        },
+        "0x67ace838aca3988a026b61036d72b93a8316d05feecb6ee10316e8d59f0e687f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "property",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "newValue",
+              "type": "bytes32"
+            }
+          ],
+          "name": "DevicePropertyUpdated",
+          "type": "event",
+          "signature": "0x67ace838aca3988a026b61036d72b93a8316d05feecb6ee10316e8d59f0e687f"
+        },
+        "0xc42d776a60a63800640db76194dbf8c0dfa12284194ce44fdc2e0248ccc40f48": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "newValue",
+              "type": "bool"
+            }
+          ],
+          "name": "DeviceActivityStatusUpdated",
+          "type": "event",
+          "signature": "0xc42d776a60a63800640db76194dbf8c0dfa12284194ce44fdc2e0248ccc40f48"
+        },
+        "0x8ab7462887e72031231781c66c0911075d2f0462c62458c9befdb4a44cfdfaa7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "clientName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "thresholdStr",
+              "type": "string"
+            }
+          ],
+          "name": "DeviceThresholdUpdated",
+          "type": "event",
+          "signature": "0x8ab7462887e72031231781c66c0911075d2f0462c62458c9befdb4a44cfdfaa7"
+        },
+        "0x3739f348a11e3a029a385b4746ea6edba7f01ceec207010638e9d17862b78c40": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "signatureId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "signer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "expiryTime",
+              "type": "uint256"
+            }
+          ],
+          "name": "DeviceSigned",
+          "type": "event",
+          "signature": "0x3739f348a11e3a029a385b4746ea6edba7f01ceec207010638e9d17862b78c40"
+        },
+        "0xf93d5095ac7696e643e1fa0aa35d622f4a13e11f4e199f30794679dcdcdb9737": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "signatureId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            }
+          ],
+          "name": "SignatureRevoked",
+          "type": "event",
+          "signature": "0xf93d5095ac7696e643e1fa0aa35d622f4a13e11f4e199f30794679dcdcdb9737"
+        },
+        "0xde4ee6b3ca944eadd6dffc1090db8df6b871245d6fedeee94222fa2779847953": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "identifier",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "publicKey",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "applicationId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "applicationName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "endpointClientName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "allDevices",
+              "type": "string"
+            }
+          ],
+          "name": "DeviceCreated",
+          "type": "event",
+          "signature": "0xde4ee6b3ca944eadd6dffc1090db8df6b871245d6fedeee94222fa2779847953"
+        },
+        "0x53d207b6cf416d44764c48a52a7e64ffa2793f67215d452a032a11e0dd34bd2c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "newData",
+              "type": "string"
+            }
+          ],
+          "name": "EntityDataUpdated",
+          "type": "event",
+          "signature": "0x53d207b6cf416d44764c48a52a7e64ffa2793f67215d452a032a11e0dd34bd2c"
+        }
+      },
+      "links": {},
+      "address": "0x0581D9a3912DF68F749bEeE50A6392a5A5985137",
+      "transactionHash": "0xc23f4235b908388db15d1838ce526ca4691c773e15b3033f99aea1320d5431ca"
+    },
+    "1594880873511": {
+      "events": {
+        "0x848155b8e733cfd6e7258639111d906437ddb051818f4061fc4c7cfbc575cb2e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "oldOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "DeviceTransfered",
+          "type": "event",
+          "signature": "0x848155b8e733cfd6e7258639111d906437ddb051818f4061fc4c7cfbc575cb2e"
+        },
+        "0x67ace838aca3988a026b61036d72b93a8316d05feecb6ee10316e8d59f0e687f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "property",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "newValue",
+              "type": "bytes32"
+            }
+          ],
+          "name": "DevicePropertyUpdated",
+          "type": "event",
+          "signature": "0x67ace838aca3988a026b61036d72b93a8316d05feecb6ee10316e8d59f0e687f"
+        },
+        "0xc42d776a60a63800640db76194dbf8c0dfa12284194ce44fdc2e0248ccc40f48": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "newValue",
+              "type": "bool"
+            }
+          ],
+          "name": "DeviceActivityStatusUpdated",
+          "type": "event",
+          "signature": "0xc42d776a60a63800640db76194dbf8c0dfa12284194ce44fdc2e0248ccc40f48"
+        },
+        "0x8ab7462887e72031231781c66c0911075d2f0462c62458c9befdb4a44cfdfaa7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "clientName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "thresholdStr",
+              "type": "string"
+            }
+          ],
+          "name": "DeviceThresholdUpdated",
+          "type": "event",
+          "signature": "0x8ab7462887e72031231781c66c0911075d2f0462c62458c9befdb4a44cfdfaa7"
+        },
+        "0x3739f348a11e3a029a385b4746ea6edba7f01ceec207010638e9d17862b78c40": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "signatureId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "signer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "expiryTime",
+              "type": "uint256"
+            }
+          ],
+          "name": "DeviceSigned",
+          "type": "event",
+          "signature": "0x3739f348a11e3a029a385b4746ea6edba7f01ceec207010638e9d17862b78c40"
+        },
+        "0xf93d5095ac7696e643e1fa0aa35d622f4a13e11f4e199f30794679dcdcdb9737": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "signatureId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            }
+          ],
+          "name": "SignatureRevoked",
+          "type": "event",
+          "signature": "0xf93d5095ac7696e643e1fa0aa35d622f4a13e11f4e199f30794679dcdcdb9737"
+        },
+        "0xde4ee6b3ca944eadd6dffc1090db8df6b871245d6fedeee94222fa2779847953": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "deviceId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "identifier",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "publicKey",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "applicationId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "applicationName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "endpointClientName",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "allDevices",
+              "type": "string"
+            }
+          ],
+          "name": "DeviceCreated",
+          "type": "event",
+          "signature": "0xde4ee6b3ca944eadd6dffc1090db8df6b871245d6fedeee94222fa2779847953"
+        },
+        "0x53d207b6cf416d44764c48a52a7e64ffa2793f67215d452a032a11e0dd34bd2c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "newData",
+              "type": "string"
+            }
+          ],
+          "name": "EntityDataUpdated",
+          "type": "event",
+          "signature": "0x53d207b6cf416d44764c48a52a7e64ffa2793f67215d452a032a11e0dd34bd2c"
+        }
+      },
+      "links": {},
+      "address": "0x2F7040be1ba3a4Be71C0375fa642ddC1Ecb7699a",
+      "transactionHash": "0x2906211bdd7e8c7a6155c5e1a5c58a2c924202d9acdbc35a50245d4629d0924c"
     }
   },
   "schemaVersion": "3.0.20",
-  "updatedAt": "2020-06-23T00:01:51.017Z",
+  "updatedAt": "2020-07-16T06:30:43.291Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {

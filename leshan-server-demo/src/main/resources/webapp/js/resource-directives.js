@@ -35,7 +35,7 @@ angular.module('resourceDirectives', [])
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getProductByDeviceClientName","outputs": [{"name": "productId","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_productId","type": "bytes32"},{"name": "specificVersionId","type": "bytes32"}],"name": "getProductByIdExtra","outputs": [{"name": "deviceClientName","type": "string"},{"name": "tempAlertStr","type": "string"},{"name": "locAlertStr","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let productABIJSON = JSON.parse(productABIstr);
-        let productConstractAddress = "0x85426d54Ff0AA5e791711e1015C0fCF39cD2B247";
+        let productConstractAddress = "0x0C4474a2bE6DC12Ca28719B7eb3415891351Cc9E";
         let productContract = web3.eth.contract(productABIJSON);
         let productManager = productContract.at(productConstractAddress)
 
@@ -44,7 +44,7 @@ angular.module('resourceDirectives', [])
         let deviceABIstr = '[{"constant": true,"inputs": [{"internalType": "string","name": "_deviceClientName","type": "string"}],"name": "getAppIdByDeviceClientName","outputs": [{"internalType": "bytes32","name": "","type": "bytes32"}],"payable": false,"stateMutability": "view","type": "function"},' +
             '{"constant": true,"inputs": [{"name": "_deviceClientName","type": "string"}],"name": "getThresholdByDeviceClientName","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"}]';
         let deviceABIJSON = JSON.parse(deviceABIstr);
-        let deviceConstractAddress = "0x4306b8EEe5C93Af5B42C2094Bb127867FA4a4D39";
+        let deviceConstractAddress = "0x2F7040be1ba3a4Be71C0375fa642ddC1Ecb7699a";
         let deviceContract = web3.eth.contract(deviceABIJSON);
         let deviceManager = deviceContract.at(deviceConstractAddress)
     return {
@@ -162,7 +162,9 @@ angular.module('resourceDirectives', [])
                             if (scope.resource.path == "/3303/0/5700") {
                                 console.log(productManager)
                                 console.log(deviceManager)
+                                console.log(data.content.value)
                                 deviceManager.getThresholdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, thre) => {
+                                    // if (data.content.value > 0) {
                                     if (data.content.value > parseInt(thre)) {
                                         deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
                                             console.log(productID) //result[0]->id  result[1]->oldAlertStr
@@ -200,6 +202,7 @@ angular.module('resourceDirectives', [])
                                     let rad = parseInt(splittedStr[2])
                                     let dist = Math.sqrt(Math.pow(lat-latRand, 2) +  Math.pow(lon-lonRand, 2))
                                     if (dist > rad) {
+                                        // if (1) {
                                         deviceManager.getAppIdByDeviceClientName(String($routeParams.clientId).valueOf(), (error, productID) => {
                                             console.log(productID) //result[0]->id  result[1]->oldAlertStr
                                             productManager.getProductByIdExtra(productID, "latest", (error, result) => {

@@ -18668,10 +18668,60 @@
       "links": {},
       "address": "0xc4Eb64AB9bb4b56fBC31AC992b581a930F77737f",
       "transactionHash": "0xc6fb6431f4c0ded5112069035f4ebeee546ce0d33acea7eb518ef046f17b9a2d"
+    },
+    "1594626710713": {
+      "events": {
+        "0x1f3cd26d22ddb1ce87773315d1a9a80f4c46a7aaf7a8d3c23827523b8976f912": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "newProductId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "ProductCreated",
+          "type": "event",
+          "signature": "0x1f3cd26d22ddb1ce87773315d1a9a80f4c46a7aaf7a8d3c23827523b8976f912"
+        }
+      },
+      "links": {},
+      "address": "0x47e5DEdc0BFd772c85DFAfa037b0d64ad2f6bc58",
+      "transactionHash": "0x28d3345d5c72e4bac91965e33d25beade4ec3cc3cab98cec4bf281dad9818ed4"
+    },
+    "1594880873511": {
+      "events": {
+        "0x1f3cd26d22ddb1ce87773315d1a9a80f4c46a7aaf7a8d3c23827523b8976f912": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "newProductId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "ProductCreated",
+          "type": "event",
+          "signature": "0x1f3cd26d22ddb1ce87773315d1a9a80f4c46a7aaf7a8d3c23827523b8976f912"
+        }
+      },
+      "links": {},
+      "address": "0x0C4474a2bE6DC12Ca28719B7eb3415891351Cc9E",
+      "transactionHash": "0xb03a7a1f14d49c140444e4cb9791b83e5ff6b16ac6887285e03e20d5726a8f57"
     }
   },
   "schemaVersion": "3.0.20",
-  "updatedAt": "2020-06-23T00:01:51.006Z",
+  "updatedAt": "2020-07-16T06:30:43.256Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

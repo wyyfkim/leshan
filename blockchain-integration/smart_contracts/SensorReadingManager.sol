@@ -10,20 +10,25 @@ contract SensorReadingManager {
     Application app;
     EventManager eventManager;
     function receive (bytes32 deivceId, string memory category, string memory message, string memory timestamp) public {
-        SensorReading storage sensorReading;
-        //initialize a proper SensorReading object
-        if (category == 'location') {
-            int latitudeReceived = Integer.parseInt(message.split(';')[0]);
-            int longitudeReceived = Integer.parseInt(message.split(';')[1]);
-            sensorReading = new LocationSensorReading(deivceId, category, message, timestamp, latitudeReceived, longitudeReceived);
-        } else {
-            int temperatureReceived = Integer.parseInt(message);
-            sensorReading = new TemperatureSensorReading(deivceId, category, message, timestamp, temperatureReceived);
-        }
+        SensorReading sensorReading = createNewSensorReading(category);
+        sensorReading.fill(deivceId, category, message, timestamp, message);
         Device storage device = app.getDeviceByDeviceId(deviceId);
         if (device.isAlert(sensorReading)) {
             addAlert(eventManager, sensorReading, category);
         }
+    }
+    function createNewSensorReading(string memory category) public returns (SensorReading sensorReading) {
+        SensorReading sensorReading;
+        //initialize a proper SensorReading object
+        switch (category) {
+            case "location":
+                sensorReading = new LocationSensorReading();
+            case "temperature":
+                sensorReading = new TemperatureSensorReading();
+            default:
+                sensorReading = new UnknownReading();
+        }
+        return sensorReading;
     }
     function addAlert (EventManager eventManager, SensorReading alert, string memory category) public {
         SensorReading[] storage existingAlerts = eventManager.categoryToAlerts[category];
@@ -31,5 +36,37 @@ contract SensorReadingManager {
             eventManager.categories.push(category);
         }
         existingAlerts.push(alert);
+    }
+}
+contract SensorReading {
+    bytes32 deviceId;
+    string category;
+    string message;
+    string timestamp;
+    function fill(bytes32 _deviceId, string memory _category, string memory _message, string memory _timestamp, string _meessage);
+}
+contract LocationSensorReading is SensorReading {
+    double latitude;
+    double longitude;
+    function fill(bytes32 _deviceId, string memory _category, string memory _message, string memory _timestamp) public {
+        double latitudeReceived = Double.parseDouble(message.split(';')[0]);
+        double longitudeReceived = Double.parseDouble(message.split(';')[1]);
+        deviceId = _deviceId;
+        category = _category;
+        message = _message;
+        timestamp = _timestamp;
+        latitude = latitudeReceived;
+        longitude = longitudeReceivedg;
+    }
+}
+contract TemperatureSensorReading is SensorReading {
+    double temperature;
+    function fill(bytes32 _deviceId, string memory _category, string memory _message, string memory _timestamp, string _meessage) public {
+        double temperatureReceived = Double.parseDouble(message);
+        deviceId = _deviceId;
+        category = _category;
+        message = _message;
+        timestamp = _timestamp;
+        temperature = temperatureReceived;
     }
 }
