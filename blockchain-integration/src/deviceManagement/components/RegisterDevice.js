@@ -272,9 +272,13 @@ class RegisterDevice extends Component {
   onChangeHandler=event=>{
     const handleFileRead = (e) => {
       let content = reader.result
-      let key = JSON.parse(content)
+      let key = content.split(" ")[1]
+      console.log(key)
+      // let key = JSON.parse(content)
       this.setState({
-        publicKey: key.publicKey
+        // publicKey: key.publicKey
+        publicKey: key
+
       });
 
       console.log(key)
@@ -296,21 +300,28 @@ class RegisterDevice extends Component {
       return (
           <div>
             <p>
-              Upload your public key file or type in your public key
+              <strong>Upload your public key file or type in your public key:</strong>
               {/*<strong>Unique device identifier</strong> is a public key or a fingerprint of RSA/ECC public key. It can also be an Ethereum address (recommended).*/}
             </p>
-
-            <br /><br />
-            <p> <strong> Public key: </strong> </p>
             <input type="file" name="file" onChange={this.onChangeHandler}/>
             <br /><br />
-            <Input
+            {/*<Input*/}
+            {/*    placeholder="Public key"*/}
+            {/*    style={{ maxWidth: '800px' }}*/}
+            {/*    value={publicKey}*/}
+            {/*    name="publicKey"*/}
+            {/*    maxLength="66"*/}
+            {/*    onChange={(e) => this.handleChange(e)}*/}
+            {/*/>*/}
+            <textarea
                 placeholder="Public key"
-                style={{ maxWidth: '800px' }}
+                // style={{ maxWidth: '800px' }}
                 value={publicKey}
                 name="publicKey"
-                maxLength="66"
+                // maxLength="66"
                 onChange={(e) => this.handleChange(e)}
+                rows={8}
+                cols={100}
             />
 
             <br /><br />
